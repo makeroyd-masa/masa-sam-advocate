@@ -1,0 +1,22 @@
+# Big read-only DB is mounted at /data, never baked into the image
+data/
+*.db
+*.db-shm
+*.db-wal
+app.db
+
+# rebuilt inside the image
+node_modules/
+dist/
+.venv/
+
+# not needed at runtime
+.git/
+__pycache__/
+*.pyc
+tests/
+.pytest_cache/
+.ruff_cache/
+chromium_cli/
+*.png
+*.mjs

@@ -1,20 +1,55 @@
 """FastAPI entrypoint.  Run: `uvicorn app.main:app --reload`
 
-Phase 0 exposes only /health (verifies both DB connections + surfaces the
-feature-flag posture). Flow routers are added in later phases.
+Serves the API, /health, and — when a built frontend (dist/) is present — the
+SPA, so the whole app is a single origin/process for deployment. An optional
+HTTP Basic gate (DEMO_USER/DEMO_PASSWORD env) protects everything but /health,
+to keep the pre-counsel demo leadership-only.
 """
 
 from __future__ import annotations
 
-from fastapi import FastAPI
+import base64
+import os
+import secrets
+
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, Response
 
 from . import __version__
-from .config import feature_flags, get_settings
+from .config import REPO_ROOT, feature_flags, get_settings
 from .db import connect_app, connect_pilot
 from .routers.flows import api as flows_api
 from .routers.intake import api as intake_api
 
 app = FastAPI(title="SAM Medical Bill Advocate", version=__version__)
+
+_DEMO_USER = os.environ.get("DEMO_USER", "")
+_DEMO_PASSWORD = os.environ.get("DEMO_PASSWORD", "")
+
+
+@app.middleware("http")
+async def basic_auth_gate(request: Request, call_next):
+    """Shared-password gate. No-op unless DEMO_PASSWORD is set. /health stays open
+    so platform health checks work."""
+    if _DEMO_PASSWORD and request.url.path != "/health":
+        header = request.headers.get("authorization", "")
+        ok = False
+        if header.startswith("Basic "):
+            try:
+                user, _, pw = base64.b64decode(header[6:]).decode("utf-8").partition(":")
+                ok = secrets.compare_digest(pw, _DEMO_PASSWORD) and (
+                    not _DEMO_USER or secrets.compare_digest(user, _DEMO_USER)
+                )
+            except Exception:  # noqa: BLE001 — any decode failure = unauthorized
+                ok = False
+        if not ok:
+            return Response(
+                "Authentication required", status_code=401,
+                headers={"WWW-Authenticate": 'Basic realm="SAM demo"'},
+            )
+    return await call_next(request)
+
+
 app.include_router(intake_api)
 app.include_router(flows_api)
 
@@ -66,3 +101,16 @@ def health() -> dict:
 
     out["feature_flags"] = feature_flags()
     return out
+
+
+# --- Serve the built SPA (single origin) -----------------------------------
+# Defined last so API routes and /health take precedence. Falls back to
+# index.html for client-side routes; serves real files (logo.svg, assets/…).
+_DIST = REPO_ROOT / "dist"
+if _DIST.exists():
+    @app.get("/{full_path:path}")
+    async def spa(full_path: str):
+        candidate = _DIST / full_path
+        if full_path and candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(_DIST / "index.html")

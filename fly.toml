@@ -1,0 +1,34 @@
+# Fly.io config. Rename `app` to your chosen name before `fly deploy`.
+# The 1 GB pilot.db lives on the mounted volume (/data), NOT in the image.
+app = "masa-sam-advocate"
+primary_region = "iad"
+
+[build]
+
+[env]
+  PILOT_DB_PATH = "/data/pilot.db"
+  APP_DB_PATH = "/data/app.db"
+  PORT = "8080"
+  # Set the demo password as a SECRET, not here:
+  #   fly secrets set DEMO_PASSWORD=... DEMO_USER=masa
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[mounts]]
+  source = "samdata"
+  destination = "/data"
+
+[[http_service.checks]]
+  path = "/health"
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "20s"
+
+[[vm]]
+  memory = "1gb"
+  cpus = 1
