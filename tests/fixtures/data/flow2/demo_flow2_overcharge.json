@@ -1,0 +1,42 @@
+[
+  {
+    "category": "demo_flow2_overcharge",
+    "expected": {
+      "findings": [
+        {
+          "benchmark_cents": 12699,
+          "billed_multiple": 6.0,
+          "code": "99214",
+          "setting": "non_facility",
+          "tier": "strong_leverage",
+          "type": "price_benchmark"
+        }
+      ],
+      "leverage_top_multiple": 6.0,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "demo_flow2_overcharge_001",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 76194,
+          "encounter_pos": "11",
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "99214",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "self_pay",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "99214"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  }
+]

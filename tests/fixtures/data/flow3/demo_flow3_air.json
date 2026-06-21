@@ -1,0 +1,21 @@
+[
+  {
+    "category": "demo_flow3_air",
+    "expected": {
+      "kind": "air",
+      "routed_to_handoff": true
+    },
+    "fixture_id": "demo_flow3_air_001",
+    "flow": 3,
+    "input": {
+      "transport_hcpcs": "A0430"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0430"
+      ],
+      "source_table": "codes"
+    }
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "category": "demo_flow2_two_tier",
+    "expected": {
+      "findings": [
+        {
+          "code": "80048",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "80053",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "benchmark_cents": 12699,
+          "billed_multiple": 6.0,
+          "code": "99214",
+          "setting": "non_facility",
+          "tier": "strong_leverage",
+          "type": "price_benchmark"
+        },
+        {
+          "disallowed_code": "80048",
+          "indicator": 0,
+          "other_code": "80053",
+          "recoverable_cents": 9500,
+          "type": "unbundling_ptp"
+        }
+      ],
+      "leverage_top_multiple": 6.0,
+      "recoverable_total_cents": 9500
+    },
+    "fixture_id": "demo_flow2_two_tier_001",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 12000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "80053",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 9500,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "80048",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 76194,
+          "encounter_pos": "11",
+          "line_no": 3,
+          "modifier": null,
+          "raw_code": "99214",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "self_pay",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "80053/80048",
+        "99214"
+      ],
+      "source_table": "ncci_ptp_edits+pfs"
+    }
+  }
+]

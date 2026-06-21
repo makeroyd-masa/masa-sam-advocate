@@ -1,0 +1,41 @@
+[
+  {
+    "category": "demo_flow1_denied",
+    "expected": {
+      "appealable": true,
+      "denials_shown": [
+        "CARC 50"
+      ],
+      "lines": [],
+      "number_cents": 124000,
+      "reconciliation": "denied_claim"
+    },
+    "fixture_id": "demo_flow1_denied_001",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "date_of_service_start": "2026-03-04",
+        "patient_responsibility_cents": 124000,
+        "provider_name": "Mercy General Hospital",
+        "total_billed_cents": 124000,
+        "total_plan_paid_cents": 0
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:50"
+      ],
+      "source_table": "codes"
+    }
+  }
+]

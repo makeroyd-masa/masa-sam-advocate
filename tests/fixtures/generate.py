@@ -356,6 +356,42 @@ def build_flow3(conn, rng) -> dict[str, list[dict]]:
     return out
 
 
+# --- Curated demo scenarios (recognizable codes, high-impact) ---------------
+def build_demo_scenarios(conn) -> dict[str, list[dict]]:
+    """A small, hand-picked set of viable, recognizable cases for live demos.
+    Built as real fixtures (verified by the runner) so the demo can't drift."""
+    out: dict[str, list[dict]] = {}
+    out["demo_flow1_denied"] = [make1(
+        conn, "demo_flow1_denied_001", "demo_flow1_denied", "codes", ["CARC:50"],
+        bill={"provider_name": "Mercy General Hospital", "date_of_service_start": "2026-03-04",
+              "total_billed_cents": 124000, "total_plan_paid_cents": 0,
+              "patient_responsibility_cents": 124000},
+        denials=[{"code": "50", "code_type": "CARC"}], insurance="medicare_ffs")]
+    out["demo_flow2_unbundling"] = [make(
+        conn, "demo_flow2_unbundling_001", "demo_flow2_unbundling", "ncci_ptp_edits", ["80053/80048"],
+        [line(1, "80053", charge=12000), line(2, "80048", charge=9500)])]
+    out["demo_flow2_mue"] = [make(
+        conn, "demo_flow2_mue_001", "demo_flow2_mue", "ncci_mue", ["80053"],
+        [line(1, "80053", units=3, charge=12000)])]
+    out["demo_flow2_overcharge"] = [make(
+        conn, "demo_flow2_overcharge_001", "demo_flow2_overcharge", "physician_fee_schedule", ["99214"],
+        [line(1, "99214", charge=76194, pos="11")], insurance="self_pay")]
+    out["demo_flow2_two_tier"] = [make(
+        conn, "demo_flow2_two_tier_001", "demo_flow2_two_tier", "ncci_ptp_edits+pfs",
+        ["80053/80048", "99214"],
+        [line(1, "80053", charge=12000), line(2, "80048", charge=9500),
+         line(3, "99214", charge=76194, pos="11")], insurance="self_pay")]
+    out["demo_flow3_ground"] = [make3_appeal(
+        conn, "demo_flow3_ground_001", "demo_flow3_ground", "A0429", "CA", 12, "medicare_ffs")]
+    out["demo_flow3_air"] = [{
+        "fixture_id": "demo_flow3_air_001", "flow": 3, "category": "demo_flow3_air",
+        "provenance": {"pilot_db_version": "see MANIFEST.json", "source_table": "codes",
+                       "source_rows": ["A0430"]},
+        "input": {"transport_hcpcs": "A0430"},
+        "expected": {"kind": "air", "routed_to_handoff": True}}]
+    return out
+
+
 CI_DB_TABLES = ["codes", "ncci_ptp_edits", "ncci_mue", "physician_fee_schedule",
                 "ambulance_fee_schedule", "ncd_ambulance", "medicare_appeal_levels",
                 "commercial_appeal_levels"]
@@ -445,42 +481,114 @@ def write_json(path: Path, obj) -> None:
     path.write_text(json.dumps(obj, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _d(cents) -> str:
+    return f"${(cents or 0) / 100:,.2f}"
+
+
 def write_demo(categories: dict[str, list[dict]]) -> None:
-    """A curated, high-impact subset rendered as human-readable cards (spec §6)."""
-    picks = [
-        ("unbundling_indicator_0", "Unbundling (NCCI PTP), never-allowed pair"),
-        ("mue_over_cap", "Quantity (NCCI MUE), over the daily cap"),
-        ("pfs_5x_plus", "Price benchmark (PFS), strong leverage"),
-    ]
+    """Render the curated demo scenarios into a leadership-ready walkthrough pack.
+    Numbers are pulled from each fixture's verified `expected`, so the pack always
+    matches what the engine is tested against (spec §6)."""
+    def one(cat):
+        fxs = categories.get(cat, [])
+        return fxs[0] if fxs else None
+
+    def pfs_bench(exp):
+        return next((f["benchmark_cents"] for f in exp["findings"]
+                     if f["type"] == "price_benchmark"), None)
+
     cards = []
-    for cat, label in picks:
-        for fx in categories.get(cat, [])[:1]:
-            ls = fx["input"]["bill_lines"]
-            enter = "; ".join(
-                f"{l['raw_code']} ×{l['units']} @ ${ (l['billed_charge_cents'] or 0)/100:,.2f}"
-                + (f" POS {l['encounter_pos']}" if l['encounter_pos'] else "")
-                for l in ls)
-            exp = fx["expected"]
-            cards.append(
-                f"Demo — {label}\n"
-                f"Enter in SAM: {enter}\n"
-                f"Expected: recoverable ${exp['recoverable_total_cents']/100:,.2f}"
-                + (f", top multiple ≈{exp['leverage_top_multiple']}×" if exp['leverage_top_multiple'] else "")
-                + f"\nSource: {fx['fixture_id']} (see MANIFEST.json)\n")
 
-    for fx in categories.get("ambulance_base_plus_mileage", [])[:1]:
-        c, e = fx["input"]["ambulance_claim"], fx["expected"]
+    fx = one("demo_flow1_denied")
+    if fx:
+        e = fx["expected"]
         cards.append(
-            "Demo — Ground ambulance appeal (base + mileage anchor)\n"
-            f"Enter in SAM: transport {c['transport_hcpcs']}, {c['loaded_miles']} loaded miles, "
-            f"state {fx['input']['state']}, denial CARC 50\n"
-            f"Expected: Medicare reasonable amount ${e['reasonable_amount_cents']/100:,.2f} "
-            f"(base ${e['base_rate_cents']/100:,.2f} + mileage); appeal pathway {e['appeal_level_ref']}\n"
-            f"Source: {fx['fixture_id']} (see MANIFEST.json)\n")
+            "## 1. Explain a denied bill (Flow 1)\n"
+            "- **In SAM:** *Understand my bill* → coverage *Medicare*.\n"
+            "- **Enter:** provider “Mercy General Hospital”, total billed **$1,240.00**, "
+            "you owe **$1,240.00**, denial code **CARC 50**.\n"
+            f"- **SAM shows:** the charge was denied as *not medically necessary* and that looks "
+            f"**appealable**; you owe **{_d(e['number_cents'])}**; offers to check for errors / start an appeal.\n"
+            f"- _verified fixture: {fx['fixture_id']}_")
 
+    fx = one("demo_flow2_unbundling")
+    if fx:
+        e = fx["expected"]
+        cards.append(
+            "## 2. Find a billing error — unbundled lab panel (Flow 2)\n"
+            "- **In SAM:** *Check it for errors & overcharges* → coverage *Medicare*.\n"
+            "- **Enter lines:** **80053** ×1 @ $120.00 (comprehensive metabolic panel); "
+            "**80048** ×1 @ $95.00 (basic metabolic panel).\n"
+            f"- **SAM shows:** **{_d(e['recoverable_total_cents'])}** likely billing error — 80048 is "
+            "bundled into 80053 (NCCI, never allowed together); ask to have it removed.\n"
+            f"- _verified fixture: {fx['fixture_id']}_")
+
+    fx = one("demo_flow2_mue")
+    if fx:
+        e = fx["expected"]
+        cards.append(
+            "## 3. Find a billing error — units over the daily cap (Flow 2)\n"
+            "- **In SAM:** *Check it for errors & overcharges* → *Medicare*.\n"
+            "- **Enter line:** **80053** ×**3** @ $120.00.\n"
+            f"- **SAM shows:** **{_d(e['recoverable_total_cents'])}** likely error — Medicare's daily "
+            "maximum for 80053 is 1 unit; the 2 excess units can be questioned.\n"
+            f"- _verified fixture: {fx['fixture_id']}_")
+
+    fx = one("demo_flow2_overcharge")
+    if fx:
+        e = fx["expected"]
+        cards.append(
+            "## 4. Flag an overcharge — ×-Medicare leverage (Flow 2)\n"
+            "- **In SAM:** *Check it for errors & overcharges* → coverage *Self-pay*.\n"
+            "- **Enter line:** **99214** ×1 @ **$761.94**, place of service **11 (office)**.\n"
+            f"- **SAM shows:** this line is **≈{e['leverage_top_multiple']:.1f}× the Medicare benchmark** "
+            f"({_d(pfs_bench(e))}) — a strong basis to negotiate a reduction (framed as leverage, not “owed”).\n"
+            f"- _verified fixture: {fx['fixture_id']}_")
+
+    fx = one("demo_flow2_two_tier")
+    if fx:
+        e = fx["expected"]
+        cards.append(
+            "## 5. The full error + overcharge card (Flow 2, two tiers)\n"
+            "- **In SAM:** *Check it for errors & overcharges* → coverage *Self-pay*.\n"
+            "- **Enter lines:** **80053** @ $120.00; **80048** @ $95.00; **99214** @ $761.94 (POS 11).\n"
+            f"- **SAM shows two honest tiers:** **{_d(e['recoverable_total_cents'])} recoverable error** "
+            f"(unbundling) **and ≈{e['leverage_top_multiple']:.1f}× over benchmark** (negotiation leverage).\n"
+            f"- _verified fixture: {fx['fixture_id']}_")
+
+    fx = one("demo_flow3_ground")
+    if fx:
+        e = fx["expected"]
+        miles = fx["input"]["ambulance_claim"]["loaded_miles"]
+        cards.append(
+            "## 6. Build a ground-ambulance appeal (Flow 3)\n"
+            "- **In SAM:** *Appeal a denied ambulance claim* → coverage *Medicare*.\n"
+            f"- **Enter:** transport **A0429** (BLS-emergency), denial **CARC 50**, emergency **yes**, "
+            f"**{miles:g}** loaded miles, state **CA**.\n"
+            f"- **SAM shows:** Medicare reasonable amount **≈ {_d(e['reasonable_amount_cents'])}** "
+            f"(base {_d(e['base_rate_cents'])} + {miles:g} mi × {_d(e['per_mile_rate_cents'])}); appeal "
+            f"**Level 1 — {e['appeal_level_ref']}** with deadline; ground-ambulance honesty note (not NSA).\n"
+            f"- _verified fixture: {fx['fixture_id']}_")
+
+    fx = one("demo_flow3_air")
+    if fx:
+        cards.append(
+            "## 7. Air ambulance routes to a human advocate (Flow 3 guardrail)\n"
+            "- **In SAM:** *Appeal a denied ambulance claim* → enter transport **A0430** (fixed-wing air).\n"
+            "- **SAM shows:** air ambulance is handled differently and may involve federal protections — "
+            "it hands off to a **human advocate** and makes no automated surprise-billing claims.\n"
+            f"- _verified fixture: {fx['fixture_id']}_")
+
+    intro = (
+        "# SAM demo pack\n\n"
+        "Curated, verified scenarios for a live walkthrough. Every code is a **real** code from "
+        "`pilot.db`, so it resolves in the running app — these are genuine bills engineered to trigger "
+        "a finding, not junk. Each card is traceable to a committed test fixture, so what you demo "
+        "matches exactly what the engine is regression-tested against.\n\n"
+        "**To run:** open the app, tap **SAM** (bottom-right), and follow a card top to bottom.\n")
     (DEMO_DIR).mkdir(parents=True, exist_ok=True)
-    (DEMO_DIR / "sam_demo_pack.md").write_text(
-        "# SAM demo pack — manual entry (Flows 1-3)\n\n" + "\n".join(cards), encoding="utf-8")
+    (DEMO_DIR / "sam_demo_pack.md").write_text(intro + "\n" + "\n\n".join(cards) + "\n",
+                                               encoding="utf-8")
 
 
 def main() -> int:
@@ -500,6 +608,7 @@ def main() -> int:
     categories.update(build_pfs(conn, rng))
     categories.update(build_flow1(conn, rng))
     categories.update(build_flow3(conn, rng))
+    categories.update(build_demo_scenarios(conn))
 
     counts = {}
     for cat, fixtures in sorted(categories.items()):

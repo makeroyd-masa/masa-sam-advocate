@@ -1,0 +1,45 @@
+[
+  {
+    "category": "demo_flow2_mue",
+    "expected": {
+      "findings": [
+        {
+          "code": "80053",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 1,
+          "code": "80053",
+          "recoverable_cents": 8000,
+          "type": "quantity_mue",
+          "units_over": 2
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 8000
+    },
+    "fixture_id": "demo_flow2_mue_001",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 12000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "80053",
+          "units": 3
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "80053"
+      ],
+      "source_table": "ncci_mue"
+    }
+  }
+]
