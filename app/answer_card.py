@@ -69,6 +69,9 @@ class AnswerCard:
     number_cents: int | None = None
     number_label: str | None = None
     number_display: str | None = None           # e.g. "≈ $546" or "≈4.4×"
+    # Optional second tier for Flow 2's honest split (recoverable $ vs ×-Medicare).
+    number2_display: str | None = None          # e.g. "≈4.4×"
+    number2_label: str | None = None            # e.g. "over benchmark"
     reconciliation: list[ReconRow] = field(default_factory=list)
     findings: list[Finding] = field(default_factory=list)
     next_action: str | None = None
