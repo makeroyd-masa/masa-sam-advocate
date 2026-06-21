@@ -35,13 +35,18 @@ def conns(tmp_path):
 
 def test_loader_joins_official_text_and_blank_copy(conns):
     app_conn, _ = conns
-    row = app_conn.execute(
+    # CARC 50 carries the joined official_text and a routing action...
+    c50 = app_conn.execute(
         "SELECT * FROM code_explanations WHERE code='50' AND code_type='CARC'"
     ).fetchone()
-    assert "medical necessity" in row["official_text"].lower()
-    assert row["plain_explanation"] == ""        # not auto-authored
-    assert row["reviewed"] == 0
-    assert row["suggested_action"] == "appeal"
+    assert "medical necessity" in c50["official_text"].lower()
+    assert c50["suggested_action"] == "appeal"
+    # ...and an unauthored code keeps blank copy + reviewed=0 (the default gate).
+    blank = app_conn.execute(
+        "SELECT * FROM code_explanations WHERE code='2' AND code_type='CARC'"
+    ).fetchone()
+    assert blank["plain_explanation"] == ""
+    assert blank["reviewed"] == 0
 
 
 def test_appeal_routes_to_flow3(conns):
@@ -77,9 +82,9 @@ def test_carc29_verify_then_escalate(conns):
 
 
 def test_display_gate_falls_back_to_official(conns):
-    # All curated copy is blank+unreviewed today → cards must show official wording.
+    # An unauthored code (blank + unreviewed) must show the payer's official wording.
     app_conn, pilot_conn = conns
-    d = router.route_denial_code(app_conn, pilot_conn, "50", "CARC")
+    d = router.route_denial_code(app_conn, pilot_conn, "2", "CARC")
     assert d.copy.source == "official_fallback"
     assert d.copy.plain_explanation is None
     assert d.copy.official_text

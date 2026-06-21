@@ -65,9 +65,10 @@ def test_explain_denied_claim_is_appealable(app_db):
     assert card.flow == "flow1_explain"
     assert "appealable" in card.headline.lower()
     assert card.number_cents == 124000
-    # CARC 50 finding present; copy falls back to official text (unreviewed).
+    # CARC 50 finding present (authored plain copy or official-text fallback — both
+    # mention medical necessity / necessary).
     carc = next(f for f in card.findings if f.title == "CARC 50")
-    assert "medical necessity" in carc.text.lower()
+    assert "medical" in carc.text.lower()
     assert carc.citation.source_type == "code_explanation"
     # full-denial reconciliation note
     assert any("denied claim" in f.text for f in card.findings)
