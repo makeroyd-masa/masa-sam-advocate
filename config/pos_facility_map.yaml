@@ -1,0 +1,43 @@
+# ============================================================================
+# config/pos_facility_map.yaml  |  v0.1
+# Encounter Place-of-Service → which PFS rate column to benchmark against
+# (PRD §6.2). This is the CMS PE-RVU facility/non-facility rule — NOT stored in
+# pilot.db, so it lives here as config.
+#   facility      -> physician_fee_schedule.fac_rate
+#   non_facility  -> physician_fee_schedule.non_fac_rate
+# Unlisted POS codes fall back to `default`. POS values are TEXT (match codes.code).
+# ============================================================================
+version: "0.1"
+default: non_facility
+
+facility:
+  "19": "Off-campus outpatient hospital"
+  "21": "Inpatient hospital"
+  "22": "On-campus outpatient hospital"
+  "23": "Emergency room - hospital"
+  "24": "Ambulatory surgical center"
+  "26": "Military treatment facility"
+  "31": "Skilled nursing facility"
+  "34": "Hospice"
+  "41": "Ambulance - land"
+  "42": "Ambulance - air or water"
+  "51": "Inpatient psychiatric facility"
+  "52": "Psychiatric facility - partial hospitalization"
+  "53": "Community mental health center"
+  "56": "Psychiatric residential treatment center"
+  "61": "Comprehensive inpatient rehabilitation facility"
+
+non_facility:
+  "11": "Office"
+  "12": "Home"
+  "20": "Urgent care facility"
+  "32": "Nursing facility"
+  "33": "Custodial care facility"
+  "49": "Independent clinic"
+  "50": "Federally qualified health center"
+  "60": "Mass immunization center"
+  "62": "Comprehensive outpatient rehabilitation facility"
+  "65": "End-stage renal disease treatment facility"
+  "71": "Public health clinic"
+  "72": "Rural health clinic"
+  "81": "Independent laboratory"

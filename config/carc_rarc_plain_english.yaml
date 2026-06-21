@@ -1,0 +1,131 @@
+# ============================================================================
+# config/carc_rarc_plain_english.yaml  |  v0.1  (routing skeleton)
+# SAM Medical Bill Advocate — §5 CARC/RARC plain-English + routing layer.
+#
+# WHAT THIS FILE IS
+#   The hand-authored, review-gated translation/routing asset (PRD §5.2/§5.3).
+#   Loaded on deploy into app.db `code_explanations` for fast joins.
+#
+# DIVISION OF LABOR (PRD §5.3)
+#   * ROUTING fields below — suggested_action, commonly_disputable, rank_frequency
+#     — are populated and ready for the router. These are semantics-driven.
+#   * MEMBER-FACING COPY — plain_explanation, practical_meaning — is intentionally
+#     left blank ("") for the content team to author and review. Do NOT auto-fill.
+#   * official_text is NOT stored here; the loader joins it from pilot.db on `code`.
+#
+# RANKING BASIS
+#   rank_frequency is within code_type (CARC 1–50, RARC 1–30). The head is grounded
+#   in the established revenue-cycle frequency literature (denial indices); the tail
+#   is standard high-volume codes. Re-validate against a live published source or
+#   MASA's own denial data before locking — only the ORDER changes, not the routing.
+#
+# suggested_action ENUM (the router; PRD §5.2)
+#   explain_only       -> stays in Flow 1 (legitimate / informational)
+#   error_check        -> Flow 2 (likely recoverable coding/quantity/bundling error)
+#   appeal             -> Flow 3 (medical-necessity / procedural appeal basis)
+#   verify_with_payer  -> off-ramp: resubmit / supply info / coordinate benefits
+#   escalate_human     -> in-house advocate handoff
+#
+# ROUTING TAXONOMY (semantic bucket -> default action)
+#   missing/incomplete info ............ verify_with_payer (error_check if coding gap)
+#   authorization / precert absent ..... appeal
+#   medical necessity / experimental ... appeal
+#   bundling / included / sequencing ... error_check
+#   duplicate claim/service ............ error_check
+#   quantity / frequency exceeds ....... error_check (MUE)
+#   coding inconsistency (dx/px/mod) ... error_check
+#   coordination of benefits / wrong payer  verify_with_payer
+#   coverage terminated / not eligible . verify_with_payer
+#   patient cost-share (ded/coins/copay) explain_only
+#   contractual adjustment / benefit max explain_only
+#   timely filing ...................... verify_with_payer (escalate if member harmed)
+# ============================================================================
+
+version: "0.1"
+rank_scope: "within_code_type"   # CARC 1-50, RARC 1-30
+
+codes:
+
+  # ---- CARC (top 50) ------------------------------------------------------
+  - { code: "16",  code_type: CARC, rank_frequency: 1,  suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # lacks info needed to adjudicate -> usually correctable resubmission
+  - { code: "197", code_type: CARC, rank_frequency: 2,  suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # precert/authorization absent -> frequently overturnable (retro-auth, emergency)
+  - { code: "18",  code_type: CARC, rank_frequency: 3,  suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # exact duplicate claim/service
+  - { code: "50",  code_type: CARC, rank_frequency: 4,  suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # not deemed medically necessary -> Flow 3 (NCD grounding for ambulance)
+  - { code: "97",  code_type: CARC, rank_frequency: 5,  suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # included/bundled in another service -> NCCI unbundling
+  - { code: "96",  code_type: CARC, rank_frequency: 6,  suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # non-covered charges -> often appeal if wrongly classified (context-sensitive)
+  - { code: "109", code_type: CARC, rank_frequency: 7,  suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # not covered by this payer/contractor; send to correct payer
+  - { code: "45",  code_type: CARC, rank_frequency: 8,  suggested_action: explain_only,      commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # charge exceeds fee schedule = contractual write-off, NOT member-owed (insured)
+  - { code: "22",  code_type: CARC, rank_frequency: 9,  suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # may be covered by another payer per COB
+  - { code: "11",  code_type: CARC, rank_frequency: 10, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # diagnosis inconsistent with procedure
+  - { code: "4",   code_type: CARC, rank_frequency: 11, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure inconsistent with / missing modifier
+  - { code: "29",  code_type: CARC, rank_frequency: 12, suggested_action: verify_with_payer, commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # timely-filing limit expired -> provider issue; member shouldn't owe (escalate if billed)
+  - { code: "27",  code_type: CARC, rank_frequency: 13, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # expenses after coverage terminated
+  - { code: "151", code_type: CARC, rank_frequency: 14, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # info doesn't support this many services -> MUE quantity
+  - { code: "119", code_type: CARC, rank_frequency: 15, suggested_action: explain_only,      commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # benefit maximum reached (plan limit)
+  - { code: "1",   code_type: CARC, rank_frequency: 16, suggested_action: explain_only,      commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # deductible amount (legitimate cost-share)
+  - { code: "2",   code_type: CARC, rank_frequency: 17, suggested_action: explain_only,      commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # coinsurance amount
+  - { code: "3",   code_type: CARC, rank_frequency: 18, suggested_action: explain_only,      commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # copayment amount
+  - { code: "204", code_type: CARC, rank_frequency: 19, suggested_action: explain_only,      commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # not covered under current benefit plan (appeal if member believes covered)
+  - { code: "167", code_type: CARC, rank_frequency: 20, suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # diagnosis not covered
+  - { code: "23",  code_type: CARC, rank_frequency: 21, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # impact of prior payer adjudication (COB)
+  - { code: "B7",  code_type: CARC, rank_frequency: 22, suggested_action: verify_with_payer, commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # provider not certified/eligible for procedure/date
+  - { code: "198", code_type: CARC, rank_frequency: 23, suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # precert/auth exceeded
+  - { code: "234", code_type: CARC, rank_frequency: 24, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure not paid separately -> bundling
+  - { code: "236", code_type: CARC, rank_frequency: 25, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure/procedure combo not compatible (NCCI)
+  - { code: "5",   code_type: CARC, rank_frequency: 26, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure code/bill type inconsistent
+  - { code: "6",   code_type: CARC, rank_frequency: 27, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure/patient age inconsistent
+  - { code: "7",   code_type: CARC, rank_frequency: 28, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure/patient gender inconsistent
+  - { code: "8",   code_type: CARC, rank_frequency: 29, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure inconsistent with provider type/specialty
+  - { code: "9",   code_type: CARC, rank_frequency: 30, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # diagnosis inconsistent with patient age
+  - { code: "10",  code_type: CARC, rank_frequency: 31, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # diagnosis inconsistent with patient gender
+  - { code: "31",  code_type: CARC, rank_frequency: 32, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # patient cannot be identified as our insured
+  - { code: "26",  code_type: CARC, rank_frequency: 33, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # expenses incurred prior to coverage
+  - { code: "35",  code_type: CARC, rank_frequency: 34, suggested_action: explain_only,      commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # lifetime benefit maximum reached
+  - { code: "39",  code_type: CARC, rank_frequency: 35, suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # services denied at time auth/precert requested
+  - { code: "40",  code_type: CARC, rank_frequency: 36, suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # doesn't meet emergent/urgent criteria -> ambulance medical-necessity appeal
+  - { code: "55",  code_type: CARC, rank_frequency: 37, suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # experimental/investigational
+  - { code: "58",  code_type: CARC, rank_frequency: 38, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # rendered in inappropriate/invalid place of service (POS)
+  - { code: "59",  code_type: CARC, rank_frequency: 39, suggested_action: explain_only,      commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # multiple/concurrent procedure reduction (expected adjustment)
+  - { code: "125", code_type: CARC, rank_frequency: 40, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # submission/billing error(s)
+  - { code: "140", code_type: CARC, rank_frequency: 41, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # patient health ID and name don't match
+  - { code: "146", code_type: CARC, rank_frequency: 42, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # diagnosis invalid for the date(s) of service
+  - { code: "147", code_type: CARC, rank_frequency: 43, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # provider contracted/negotiated rate not on file
+  - { code: "181", code_type: CARC, rank_frequency: 44, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure code invalid on the DOS
+  - { code: "182", code_type: CARC, rank_frequency: 45, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure modifier invalid on the DOS
+  - { code: "252", code_type: CARC, rank_frequency: 46, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # attachment/documentation required to adjudicate
+  - { code: "B15", code_type: CARC, rank_frequency: 47, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # requires a qualifying service first (sequencing/bundling)
+  - { code: "273", code_type: CARC, rank_frequency: 48, suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # coverage/program guidelines not met
+  - { code: "24",  code_type: CARC, rank_frequency: 49, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # covered under capitation/managed-care arrangement
+  - { code: "226", code_type: CARC, rank_frequency: 50, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # info from billing/rendering provider not provided/insufficient
+
+  # ---- RARC (top 30) ------------------------------------------------------
+  - { code: "N130",  code_type: RARC, rank_frequency: 1,  suggested_action: explain_only,      commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # consult plan benefit documents
+  - { code: "MA04",  code_type: RARC, rank_frequency: 2,  suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # secondary payment needs primary EOB (COB)
+  - { code: "N115",  code_type: RARC, rank_frequency: 3,  suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # decision based on an LCD (local coverage policy)
+  - { code: "N386",  code_type: RARC, rank_frequency: 4,  suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # decision based on an NCD (national coverage policy)
+  - { code: "MA130", code_type: RARC, rank_frequency: 5,  suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # incomplete/invalid info, no appeal rights -> must correct & resubmit
+  - { code: "M76",   code_type: RARC, rank_frequency: 6,  suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # missing/incomplete/invalid diagnosis
+  - { code: "M51",   code_type: RARC, rank_frequency: 7,  suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # missing/incomplete/invalid procedure code
+  - { code: "N522",  code_type: RARC, rank_frequency: 8,  suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # duplicate of a claim already processed
+  - { code: "N30",   code_type: RARC, rank_frequency: 9,  suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # patient ineligible for this service
+  - { code: "M80",   code_type: RARC, rank_frequency: 10, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # not covered when performed same date as another processed service (bundling)
+  - { code: "N362",  code_type: RARC, rank_frequency: 11, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # days/units exceeds acceptable maximum -> MUE quantity
+  - { code: "N479",  code_type: RARC, rank_frequency: 12, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # missing primary EOB (COB)
+  - { code: "N179",  code_type: RARC, rank_frequency: 13, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # additional information requested from the patient
+  - { code: "M127",  code_type: RARC, rank_frequency: 14, suggested_action: verify_with_payer, commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # missing medical record for this service -> supports appeal
+  - { code: "N822",  code_type: RARC, rank_frequency: 15, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # missing procedure modifier(s)
+  - { code: "N823",  code_type: RARC, rank_frequency: 16, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # incomplete/invalid procedure modifier(s)
+  - { code: "N20",   code_type: RARC, rank_frequency: 17, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # not payable with other service rendered same day (bundling)
+  - { code: "N431",  code_type: RARC, rank_frequency: 18, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # service not covered with this procedure (bundling/sequencing)
+  - { code: "N640",  code_type: RARC, rank_frequency: 19, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # exceeds number/frequency approved
+  - { code: "N657",  code_type: RARC, rank_frequency: 20, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # should be billed with the appropriate code for these services
+  - { code: "N448",  code_type: RARC, rank_frequency: 21, suggested_action: appeal,            commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # not covered / new or experimental
+  - { code: "M16",   code_type: RARC, rank_frequency: 22, suggested_action: explain_only,      commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # see provider/payer bulletin for further information
+  - { code: "N674",  code_type: RARC, rank_frequency: 23, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # not covered unless a prerequisite service was provided (sequencing)
+  - { code: "M86",   code_type: RARC, rank_frequency: 24, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # payment already made for same/similar service within timeframe (duplicate-like)
+  - { code: "N210",  code_type: RARC, rank_frequency: 25, suggested_action: explain_only,      commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # you may appeal this decision -> flags appeal rights
+  - { code: "N390",  code_type: RARC, rank_frequency: 26, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # not separately payable / part of another service (bundling)
+  - { code: "MA66",  code_type: RARC, rank_frequency: 27, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # missing/incomplete/invalid principal procedure code
+  - { code: "N56",   code_type: RARC, rank_frequency: 28, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # procedure code not valid for the service/DOS billed
+  - { code: "N702",  code_type: RARC, rank_frequency: 29, suggested_action: verify_with_payer, commonly_disputable: false, reviewed: false, plain_explanation: "", practical_meaning: "" }   # decision based on review of previously adjudicated claims
+  - { code: "N15",   code_type: RARC, rank_frequency: 30, suggested_action: error_check,       commonly_disputable: true,  reviewed: false, plain_explanation: "", practical_meaning: "" }   # services for a newborn must be billed separately

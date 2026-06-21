@@ -1,0 +1,20 @@
+# ============================================================================
+# config/feature_flags.yaml  |  v0.1
+# App-layer gates (PRD §8). All counsel/scope gates default to the SAFE state.
+# The schema only RECORDS when gated content was suppressed; these flags decide.
+# ============================================================================
+version: "0.1"
+flags:
+  # 4c counsel gate. Controls user-facing NSA citations (air-ambulance / surprise
+  # billing). DEFAULT OFF until counsel sign-off. Ground appeals never cite NSA,
+  # so they are unaffected by this flag. (PRD §8, §10 #4c)
+  nsa_citations_enabled: false
+
+  # Ground-only v1 (PRD §6.3, §10 #11). When false, air codes (A0430/A0431 and
+  # air-mileage A0435/A0436) are routed to the human-advocate handoff and never
+  # enter the ground appeal flow. The air branch is a stubbed seam for later.
+  flow3_air_ambulance_enabled: false
+
+  # UPL counsel gate (PRD §8). When false, generated appeal letters stay at
+  # letter_status='pending_counsel_review' and are not surfaced to the member.
+  appeal_letter_generation_enabled: false

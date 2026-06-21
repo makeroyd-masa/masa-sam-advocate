@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAM — Screen Set v0.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --horizon:#230871; --tide:#0071CE; --flare:#E64B38; --shine:#FFD040;
+    --harbor:#968694; --ink:#222222; --white:#fff;
+    --h-05:#f3f1f9; --h-10:#e8e5f4; --h-20:#d2cce8;
+    --card:#edeef6; --field:#f1f2f7; --line:#e3e1ec;
+    --tide-10:#e5f1fb;
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:#e9e8ee; color:var(--ink);
+    font-family:"Open Sans",Arial,sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1280px; margin:0 auto; padding:40px 24px 80px}
+  .page-head{margin-bottom:8px}
+  .page-head .logo{width:150px; height:auto; display:block; margin-bottom:18px}
+  h1{font-family:"Poppins",sans-serif; font-weight:700; color:var(--horizon);
+     font-size:30px; letter-spacing:-.5px; margin:0 0 6px}
+  .sub{color:#5b5566; font-size:15px; max-width:760px; line-height:1.5; margin:0}
+  .legend{display:flex; flex-wrap:wrap; gap:14px 26px; margin:22px 0 6px; font-size:12.5px; color:#5b5566}
+  .legend span{display:inline-flex; align-items:center; gap:7px}
+  .dot{width:11px; height:11px; border-radius:3px; display:inline-block}
+  .sec{font-family:"Poppins",sans-serif; font-weight:600; color:var(--horizon);
+       font-size:17px; margin:46px 0 4px; letter-spacing:-.2px}
+  .sec-note{color:#6b6675; font-size:13.5px; margin:0 0 18px}
+  .grid{display:flex; flex-wrap:wrap; gap:34px 28px}
+  figure{margin:0; width:330px}
+  figcaption{margin-top:12px}
+  .cap-t{font-family:"Poppins",sans-serif; font-weight:600; font-size:14px; color:var(--horizon)}
+  .cap-d{font-size:12.5px; color:#6b6675; line-height:1.45; margin-top:3px}
+  .cap-w{font-size:11.5px; color:var(--tide); margin-top:5px; font-family:"Open Sans"}
+  .cap-w b{color:#3f6f9e; font-weight:700}
+
+  /* ---------- phone shell ---------- */
+  .phone{width:330px; height:712px; background:#0c0c14; border-radius:46px;
+         padding:11px; box-shadow:0 18px 40px rgba(35,8,113,.16); position:relative}
+  .screen{position:relative; width:100%; height:100%; background:#fff;
+          border-radius:36px; overflow:hidden; display:flex; flex-direction:column}
+  .status{height:46px; flex:0 0 46px; display:flex; align-items:center; justify-content:space-between;
+          padding:0 26px 0 30px; font-size:14px; font-weight:600; position:relative; z-index:5}
+  .status .t{font-family:"Open Sans"; font-weight:700}
+  .status .r{display:flex; gap:6px; align-items:center; font-size:12px}
+  .status.onlight{color:#111} .status.ondark{color:#fff}
+  .bars{display:inline-block; width:17px; height:11px; background:
+      linear-gradient(to right,currentColor 0 3px,transparent 3px 4px,currentColor 4px 7px,transparent 7px 8px,currentColor 8px 11px,transparent 11px 12px,currentColor 12px 16px)}
+  .batt{width:22px;height:11px;border:1px solid currentColor;border-radius:3px;position:relative}
+  .batt:after{content:"";position:absolute;left:1px;top:1px;bottom:1px;right:5px;background:currentColor;border-radius:1px}
+  .wifi{font-size:13px}
+
+  /* ---------- app chrome (underlying screen) ---------- */
+  .app-head{background:var(--horizon); padding:2px 20px 22px; position:relative; overflow:hidden}
+  .app-head:after{content:"";position:absolute;right:-50px;top:-90px;width:200px;height:200px;
+        background:rgba(255,255,255,.05);border-radius:50%}
+  .app-head .row{display:flex; justify-content:space-between; align-items:center}
+  .mark{width:30px;height:30px}
+  .ico{width:22px;height:22px;color:#fff;opacity:.95}
+  .app-title{font-family:"Poppins";font-weight:700;color:#fff;font-size:30px;margin:6px 0 0;letter-spacing:-.5px}
+  .app-body{flex:1; overflow:hidden; background:#fff; padding:18px 18px 0}
+  .lbl{font-size:13px;color:#6b6675;margin:2px 0 9px}
+  .card{background:var(--card); border-radius:14px; padding:15px 16px; margin-bottom:12px;
+        display:flex; justify-content:space-between; align-items:center}
+  .card h4{font-family:"Poppins";font-weight:600;font-size:15px;margin:0 0 3px;color:#1c1340}
+  .card p{margin:0;font-size:12.5px;color:#6b6675}
+  .chev{color:var(--flare);font-size:20px;font-weight:700;line-height:1}
+  .pill{display:flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;
+        font-family:"Poppins";font-weight:600;font-size:15.5px;border-radius:30px;padding:15px;width:100%}
+  .pill.purple{background:var(--horizon);color:#fff}
+  .pill.blue{background:var(--tide);color:#fff}
+  .pill.ghost{background:var(--h-05);color:var(--horizon)}
+  .pill .a{font-weight:700}
+  .alert{background:var(--flare);color:#fff;border-radius:14px;padding:13px 15px;margin-bottom:14px}
+  .alert b{font-family:"Poppins";font-weight:700;font-size:14px}
+  .alert p{margin:3px 0 0;font-size:12px;opacity:.95}
+  .tint{background:var(--h-10);border-radius:14px;padding:14px 15px;margin-bottom:14px}
+  .tint h4{font-family:"Poppins";font-weight:600;color:var(--horizon);font-size:14.5px;margin:0 0 4px}
+  .tint p{margin:0;font-size:12.5px;color:#4a4258}
+
+  /* bottom tab bar */
+  .tabs{flex:0 0 56px;display:flex;border-top:1px solid var(--line);background:#fff}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+       font-size:9.5px;color:#7a7585}
+  .tab svg{width:19px;height:19px}
+  .tab.on{color:var(--flare)}
+
+  /* ---------- dim + sheet ---------- */
+  .dim{position:absolute;inset:0;background:rgba(20,8,55,.55);z-index:8}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;z-index:9;
+         border-radius:26px 26px 36px 36px;display:flex;flex-direction:column;
+         box-shadow:0 -10px 40px rgba(20,8,55,.25)}
+  .sheet.mid{height:74%} .sheet.tall{height:93%}
+  .handle{width:42px;height:5px;border-radius:3px;background:#d6d3e0;margin:11px auto 4px}
+  .sheet-head{display:flex;align-items:center;gap:11px;padding:6px 20px 14px;border-bottom:1px solid var(--line)}
+  .sam-badge{width:38px;height:38px;border-radius:11px;background:var(--horizon);
+             display:flex;align-items:center;justify-content:center;flex:0 0 38px}
+  .sam-badge svg{width:21px;height:21px}
+  .sam-id{flex:1}
+  .sam-id .n{font-family:"Poppins";font-weight:700;color:var(--horizon);font-size:16px;line-height:1}
+  .sam-id .r{font-size:11.5px;color:var(--harbor);margin-top:2px}
+  .x{color:var(--harbor);font-size:20px;font-weight:600;cursor:pointer}
+  .sheet-body{flex:1;overflow:auto;padding:16px 20px 18px}
+  .sheet-foot{padding:12px 20px 18px;border-top:1px solid var(--line);background:#fff}
+
+  .sam-msg{background:var(--h-05);border-radius:14px;padding:13px 15px;font-size:13.5px;
+           color:#36304a;line-height:1.5;margin-bottom:16px}
+  .sam-msg b{color:var(--horizon)}
+  .q{font-family:"Poppins";font-weight:600;font-size:15px;color:#1c1340;margin:0 0 12px}
+
+  .choice{display:flex;align-items:center;gap:13px;width:100%;text-align:left;cursor:pointer;
+          background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:11px}
+  .choice:hover{border-color:var(--horizon)}
+  .choice.sel{border-color:var(--horizon);background:var(--h-05)}
+  .choice .ic{width:40px;height:40px;border-radius:11px;background:var(--h-10);flex:0 0 40px;
+              display:flex;align-items:center;justify-content:center;color:var(--horizon)}
+  .choice .ic svg{width:21px;height:21px}
+  .choice .tx h5{font-family:"Poppins";font-weight:600;font-size:14px;margin:0 0 2px;color:#1c1340}
+  .choice .tx p{margin:0;font-size:12px;color:#6b6675;line-height:1.35}
+  .radio{width:20px;height:20px;border-radius:50%;border:2px solid #cdc8db;flex:0 0 20px}
+  .choice.sel .radio{border-color:var(--horizon);background:radial-gradient(var(--horizon) 42%,transparent 46%)}
+
+  .opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:6px}
+  .opt{border:1.5px solid var(--line);border-radius:12px;padding:12px 12px;font-size:12.5px;
+       font-weight:600;color:#3a3350;cursor:pointer;text-align:center;line-height:1.3}
+  .opt.sel{border-color:var(--horizon);background:var(--h-05);color:var(--horizon)}
+
+  .fld{margin-bottom:13px}
+  .fld label{display:block;font-size:12px;font-weight:600;color:#4a4258;margin-bottom:6px}
+  .input{width:100%;background:var(--field);border:none;border-radius:11px;padding:13px 13px;
+         font-size:13.5px;color:#1c1340;font-family:"Open Sans"}
+  .input.ph{color:#9b96a8}
+  .two{display:flex;gap:10px}.two>.fld{flex:1}
+  .hint{font-size:11.5px;color:var(--harbor);margin-top:6px;line-height:1.4}
+
+  .lineblk{border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:12px}
+  .lineblk .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+  .lineblk .top b{font-family:"Poppins";font-weight:600;font-size:13px;color:var(--horizon)}
+  .detect{display:inline-flex;align-items:center;gap:5px;background:var(--h-10);color:var(--horizon);
+          font-size:10.5px;font-weight:700;border-radius:20px;padding:3px 9px}
+  .addline{display:flex;align-items:center;justify-content:center;gap:7px;border:1.5px dashed #c8c3d6;
+           border-radius:12px;padding:12px;color:var(--horizon);font-weight:600;font-size:13px;cursor:pointer;margin-bottom:4px}
+  .toggle{width:44px;height:26px;border-radius:20px;background:var(--tide);position:relative;flex:0 0 44px}
+  .toggle:after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;right:3px}
+  .toggle.off{background:#cfccd9}.toggle.off:after{right:auto;left:3px}
+  .togrow{display:flex;align-items:center;justify-content:space-between;gap:12px;
+          background:var(--field);border-radius:12px;padding:12px 14px;margin-bottom:13px}
+  .togrow span{font-size:13px;font-weight:600;color:#3a3350}
+
+  /* ---------- answer card ---------- */
+  .ac-head{padding:8px 18px 0}
+  .ac-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+              color:var(--horizon);background:var(--h-10);border-radius:20px;padding:4px 11px;margin-bottom:11px}
+  .ac-headline{font-family:"Poppins";font-weight:700;font-size:19px;line-height:1.25;color:#1c1340;margin:0 0 14px;letter-spacing:-.3px}
+  .num-card{background:var(--horizon);border-radius:16px;padding:16px 17px;color:#fff;margin-bottom:14px}
+  .num-card .k{font-size:11.5px;opacity:.8;font-weight:600;letter-spacing:.3px}
+  .num-card .v{font-family:"Poppins";font-weight:700;font-size:30px;line-height:1.05;margin:3px 0 2px}
+  .num-card .x2{font-size:12px;opacity:.9}
+  .num-split{display:flex;gap:10px;margin-bottom:14px}
+  .num-split>div{flex:1;border-radius:14px;padding:13px 13px}
+  .ns-err{background:var(--horizon);color:#fff}
+  .ns-lev{background:var(--tide-10);color:var(--horizon);border:1px solid #cfe4f7}
+  .num-split .k{font-size:10.5px;font-weight:700;letter-spacing:.2px;opacity:.85}
+  .num-split .v{font-family:"Poppins";font-weight:700;font-size:21px;margin-top:3px;line-height:1}
+  .num-split .s{font-size:10.5px;margin-top:3px;opacity:.9}
+
+  .why{margin:0 0 6px}
+  .why h6{font-family:"Poppins";font-weight:600;font-size:12px;color:var(--harbor);text-transform:uppercase;letter-spacing:.4px;margin:0 0 9px}
+  .find{display:flex;gap:11px;padding:11px 0;border-top:1px solid var(--line)}
+  .find:first-of-type{border-top:none}
+  .find .b{width:7px;height:7px;border-radius:50%;margin-top:6px;flex:0 0 7px}
+  .b.err{background:var(--horizon)} .b.lev{background:var(--tide)} .b.ok{background:var(--harbor)}
+  .find .c h6{font-family:"Poppins";font-weight:600;font-size:13px;color:#1c1340;text-transform:none;letter-spacing:0;margin:0 0 2px}
+  .find .c p{margin:0;font-size:12px;color:#5b5566;line-height:1.45}
+  .cite{display:inline-block;font-size:10.5px;color:var(--harbor);margin-top:5px;
+        background:#f1eff6;border-radius:6px;padding:2px 7px}
+  .recon{background:var(--field);border-radius:13px;padding:13px 15px;margin-bottom:14px}
+  .recon .rr{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;color:#4a4258}
+  .recon .rr.tot{border-top:1px dashed #cfcbd9;margin-top:4px;padding-top:9px;font-weight:700;color:#1c1340}
+  .recon .rr b{font-family:"Open Sans";font-weight:700}
+  .pathway{background:var(--h-05);border-radius:13px;padding:13px 15px;margin-bottom:13px}
+  .pathway .pl{font-family:"Poppins";font-weight:600;font-size:13.5px;color:var(--horizon);margin:0 0 3px}
+  .pathway .dl{font-size:12.5px;color:#4a4258;margin:0}
+  .caveat{font-size:11px;color:var(--harbor);font-style:italic;margin:7px 0 0;line-height:1.4}
+  .honesty{display:flex;gap:10px;background:#fff7e6;border:1px solid #f6e3ad;border-radius:13px;padding:12px 14px;margin-bottom:14px}
+  .honesty svg{width:18px;height:18px;color:#b8860b;flex:0 0 18px;margin-top:1px}
+  .honesty p{margin:0;font-size:12px;color:#6b5618;line-height:1.45}
+  .frame-note{font-size:11px;color:var(--harbor);font-style:italic;text-align:center;margin:11px 4px 0;line-height:1.4}
+  .escal{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--flare);
+         font-weight:700;font-size:13px;font-family:"Open Sans";margin-top:13px;cursor:pointer}
+
+  /* FAB */
+  .fab{position:absolute;right:16px;bottom:70px;z-index:7;display:flex;align-items:center;gap:9px;
+       background:var(--horizon);color:#fff;border-radius:30px;padding:11px 17px 11px 12px;
+       box-shadow:0 8px 22px rgba(35,8,113,.42)}
+  .fab .ring{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.16);
+             display:flex;align-items:center;justify-content:center}
+  .fab .ring svg{width:18px;height:18px}
+  .fab .ft{font-family:"Poppins";font-weight:700;font-size:14px}
+  .ctx-bubble{position:absolute;right:16px;bottom:124px;z-index:7;background:#fff;border-radius:14px 14px 4px 14px;
+        padding:11px 13px;max-width:210px;box-shadow:0 8px 22px rgba(20,8,55,.18);font-size:12px;color:#36304a;line-height:1.4}
+  .ctx-bubble b{color:var(--horizon)}
+
+  .launch-ctx{background:var(--h-10);border-radius:14px;padding:13px 15px;margin-bottom:16px}
+  .launch-ctx .e{font-size:10.5px;font-weight:700;color:var(--horizon);letter-spacing:.3px;text-transform:uppercase}
+  .launch-ctx .m{font-size:13.5px;color:#36304a;margin-top:5px;line-height:1.45}
+  .cap-act{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+  .cap-act:last-child{border-bottom:none}
+  .cap-act .ic{width:34px;height:34px;border-radius:10px;background:var(--h-05);flex:0 0 34px;display:flex;align-items:center;justify-content:center;color:var(--horizon)}
+  .cap-act .ic svg{width:18px;height:18px}
+  .cap-act .tx{flex:1}.cap-act .tx h5{font-family:"Poppins";font-weight:600;font-size:13.5px;margin:0;color:#1c1340}
+  .cap-act .tx p{margin:1px 0 0;font-size:11.5px;color:#6b6675}
+  .soon{font-size:9.5px;font-weight:700;color:var(--harbor);background:#eceaf1;border-radius:10px;padding:2px 7px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-head">
+    <!-- MASA Horizon wordmark -->
+    <svg class="logo" viewBox="0 0 266 52" xmlns="http://www.w3.org/2000/svg" aria-label="MASA">
+      <path fill="#230871" d="M62.78,10.74c-2.82,0-5.44,0.68-7.87,2.05c-2.42,1.36-4.27,3.17-5.54,5.43c-1.32-2.4-3.17-4.24-5.57-5.54c-2.4-1.29-5.13-1.94-8.18-1.94c0,0-22.19-1.73-21.37,16.77v22.88h9.88V28.8c0-3.06,0.79-5.4,2.36-7.02c1.58-1.62,3.73-2.43,6.45-2.43c2.68,0,4.8,0.81,6.35,2.43c1.55,1.62,2.33,3.96,2.33,7.02v21.59h9.88V28.8c0-3.06,0.79-5.4,2.36-7.02c1.58-1.62,3.7-2.43,6.38-2.43c2.68,0,4.8,0.81,6.35,2.43c1.55,1.62,2.33,3.96,2.33,7.02v21.59h9.88V27.46c0-5.27-1.47-9.37-4.41-12.31C71.44,12.21,67.58,10.74,62.78,10.74z"/>
+      <path fill="#230871" d="M111.45,16.88c-1.32-1.79-3.07-3.27-5.26-4.44c-2.19-1.18-4.74-1.76-7.65-1.76c-3.34,0-6.36,0.82-9.06,2.47c-2.71,1.65-4.84,4-6.42,7.05c-1.58,3.06-2.36,6.56-2.36,10.51c0,4,0.79,7.54,2.36,10.62c1.57,3.08,3.71,5.47,6.42,7.16c2.7,1.69,5.7,2.54,8.99,2.54c2.91,0,5.49-0.6,7.72-1.8c2.23-1.2,3.99-2.72,5.26-4.55v5.71h9.95V11.31h-9.95V16.88z M110.04,37.02c-0.94,1.72-2.21,3.03-3.81,3.95c-1.6,0.92-3.32,1.38-5.15,1.38c-1.79,0-3.47-0.47-5.04-1.41c-1.58-0.94-2.85-2.29-3.81-4.06c-0.96-1.76-1.45-3.82-1.45-6.17c0-2.35,0.48-4.38,1.45-6.1c0.96-1.72,2.22-3.02,3.77-3.92c1.55-0.89,3.24-1.34,5.08-1.34s3.55,0.46,5.15,1.38c1.6,0.92,2.87,2.23,3.81,3.95c0.94,1.72,1.41,3.77,1.41,6.17C111.45,33.25,110.98,35.3,110.04,37.02z"/>
+      <path fill="#230871" d="M148.74,29.51c-1.83-0.75-4.16-1.48-6.98-2.19c-2.78-0.71-4.82-1.4-6.14-2.08c-1.32-0.68-1.98-1.68-1.98-3c0-1.17,0.48-2.09,1.45-2.75c0.96-0.66,2.34-0.99,4.13-0.99c1.93,0,3.47,0.46,4.62,1.38c1.15,0.92,1.8,2.15,1.94,3.7h9.45c-0.28-3.95-1.81-7.09-4.59-9.42c-2.78-2.33-6.49-3.49-11.15-3.49c-3.15,0-5.89,0.52-8.22,1.55c-2.33,1.04-4.12,2.45-5.36,4.23c-1.25,1.79-1.87,3.76-1.87,5.93c0,2.63,0.67,4.73,2.01,6.28c1.34,1.55,2.94,2.7,4.8,3.46c1.86,0.75,4.24,1.48,7.16,2.19c2.82,0.75,4.88,1.45,6.17,2.08c1.29,0.63,1.94,1.59,1.94,2.86c0,1.18-0.53,2.14-1.59,2.89c-1.06,0.75-2.53,1.13-4.41,1.13c-1.93,0-3.54-0.49-4.83-1.48c-1.29-0.99-2.03-2.23-2.22-3.74h-9.95c0.14,2.4,0.95,4.59,2.43,6.56c1.48,1.98,3.49,3.54,6.03,4.69c2.54,1.15,5.41,1.73,8.61,1.73c3.1,0,5.82-0.51,8.15-1.52c2.33-1.01,4.11-2.41,5.36-4.2c1.24-1.79,1.87-3.81,1.87-6.07c-0.05-2.59-0.74-4.67-2.08-6.24C152.16,31.42,150.58,30.26,148.74,29.51z"/>
+      <path fill="#230871" d="M187.41,16.88c-1.32-1.79-3.07-3.27-5.26-4.44c-2.19-1.18-4.74-1.76-7.65-1.76c-3.34,0-6.36,0.82-9.06,2.47c-2.71,1.65-4.84,4-6.42,7.05c-1.58,3.06-2.36,6.56-2.36,10.51c0,4,0.79,7.54,2.36,10.62c1.57,3.08,3.71,5.47,6.42,7.16c2.7,1.69,5.7,2.54,8.99,2.54c2.91,0,5.49-0.6,7.72-1.8c2.23-1.2,3.99-2.72,5.26-4.55v5.71h9.95V11.31h-9.95V16.88z M186,37.02c-0.94,1.72-2.21,3.03-3.81,3.95c-1.6,0.92-3.32,1.38-5.15,1.38c-1.79,0-3.47-0.47-5.04-1.41c-1.58-0.94-2.85-2.29-3.81-4.06c-0.96-1.76-1.45-3.82-1.45-6.17c0-2.35,0.48-4.38,1.45-6.1c0.96-1.72,2.22-3.02,3.77-3.92c1.55-0.89,3.24-1.34,5.08-1.34c1.83,0,3.55,0.46,5.15,1.38c1.6,0.92,2.87,2.23,3.81,3.95c0.94,1.72,1.41,3.77,1.41,6.17C187.41,33.25,186.94,35.3,186,37.02z"/>
+      <path fill="#230871" d="M250.04,21.89h-13.16c-2.62,0-4.74,2.13-4.74,4.76v13.22c0,0.97,0.78,1.75,1.74,1.75h3.44c0.96,0,1.74-0.78,1.74-1.75V28.84h10.97c0.96,0,1.74-0.78,1.74-1.75v-3.46C251.78,22.67,251,21.89,250.04,21.89z"/>
+      <path fill="#230871" d="M250.04,13.74h-10.97V2.72c0-0.97-0.78-1.75-1.74-1.75h-3.44c-0.96,0-1.74,0.78-1.74,1.75v13.22c0,2.63,2.12,4.76,4.74,4.76h13.16c0.96,0,1.74-0.78,1.74-1.75v-3.46C251.78,14.53,251,13.74,250.04,13.74z"/>
+      <path fill="#230871" d="M226.04,21.89h-13.16c-0.96,0-1.74,0.78-1.74,1.75v3.46c0,0.97,0.78,1.75,1.74,1.75h10.97v11.02c0,0.97,0.78,1.75,1.74,1.75h3.44c0.96,0,1.74-0.78,1.74-1.75V26.65C230.77,24.02,228.65,21.89,226.04,21.89z"/>
+      <path fill="#230871" d="M229.03,0.98h-3.44c-0.96,0-1.74,0.78-1.74,1.75v11.02h-10.97c-0.96,0-1.74,0.78-1.74,1.75v3.46c0,0.97,0.78,1.75,1.74,1.75h13.16c2.62,0,4.74-2.13,4.74-4.76V2.72C230.77,1.76,229.99,0.98,229.03,0.98z"/>
+    </svg>
+    <h1>SAM — Screen Set v0.1</h1>
+    <p class="sub">Member-facing screens for the SAM medical-bill advocate, drawn on the existing MASA app surfaces. Maps to PRD v0.3 §1.3 (universal SAM), §4 (intake checkpoint), and §7 (answer card). Each frame is captioned with its stage and the <code>app.db</code> fields it writes.</p>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--horizon)"></i>Horizon — primary / advocate actions</span>
+      <span><i class="dot" style="background:var(--tide)"></i>Tide — leverage / secondary</span>
+      <span><i class="dot" style="background:var(--flare)"></i>Flare — links &amp; escalation</span>
+      <span><i class="dot" style="background:var(--shine)"></i>Shine — honesty / caution node</span>
+    </div>
+  </div>
+
+  <!-- ============ SECTION: ENTRY ============ -->
+  <div class="sec">1 · Universal entry — no dedicated SAM page</div>
+  <p class="sec-note">A persistent FAB carries the full capability set everywhere; the launch surface pre-seeds the workflow. Writes <code>cases.entry_point</code> + <code>cases.seed_intent</code>.</p>
+  <div class="grid">
+
+    <!-- A. Contextual FAB on Claims -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status ondark"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="app-head">
+          <div class="row">
+            <svg class="mark" viewBox="209 -2 45 46"><path fill="#fff" d="M250.04,21.89h-13.16c-2.62,0-4.74,2.13-4.74,4.76v13.22c0,0.97,0.78,1.75,1.74,1.75h3.44c0.96,0,1.74-0.78,1.74-1.75V28.84h10.97c0.96,0,1.74-0.78,1.74-1.75v-3.46C251.78,22.67,251,21.89,250.04,21.89z"/><path fill="#fff" d="M250.04,13.74h-10.97V2.72c0-0.97-0.78-1.75-1.74-1.75h-3.44c-0.96,0-1.74,0.78-1.74,1.75v13.22c0,2.63,2.12,4.76,4.74,4.76h13.16c0.96,0,1.74-0.78,1.74-1.75v-3.46C251.78,14.53,251,13.74,250.04,13.74z"/><path fill="#fff" d="M226.04,21.89h-13.16c-0.96,0-1.74,0.78-1.74,1.75v3.46c0,0.97,0.78,1.75,1.74,1.75h10.97v11.02c0,0.97,0.78,1.75,1.74,1.75h3.44c0.96,0,1.74-0.78,1.74-1.75V26.65C230.77,24.02,228.65,21.89,226.04,21.89z"/><path fill="#fff" d="M229.03,0.98h-3.44c-0.96,0-1.74,0.78-1.74,1.75v11.02h-10.97c-0.96,0-1.74,0.78-1.74,1.75v3.46c0,0.97,0.78,1.75,1.74,1.75h13.16c2.62,0,4.74-2.13,4.74-4.76V2.72C230.77,1.76,229.99,0.98,229.03,0.98z"/></svg>
+            <div style="display:flex;gap:16px"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+          </div>
+          <div class="app-title">Claims</div>
+        </div>
+        <div class="app-body">
+          <div class="lbl">What to know</div>
+          <div class="tint"><h4>Should I file?</h4><p>You have travel coverage enabled. Learn what to do in an emergency.</p></div>
+          <button class="pill purple" style="margin:4px 0 16px">File a new claim</button>
+          <div class="lbl">Open claims</div>
+          <div class="card"><div><h4>Air transport claim</h4><p>Submitted 02/24 · #1234 · In progress</p></div><span class="chev">›</span></div>
+        </div>
+        <div class="ctx-bubble">Need help with claim <b>#1234</b>? I can read it and check for issues.</div>
+        <div class="fab"><span class="ring"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></span><span class="ft">SAM</span></div>
+        <div class="tabs">
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Overview</div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Plan</div>
+          <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v3h6V3"/></svg>Claims</div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5h6v2"/></svg>Travel</div>
+          <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21C5 16 3 12 3 8a4 4 0 018-1 4 4 0 018 1c0 4-2 8-9 13z"/></svg>Care</div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Contextual FAB — Claims screen</div><div class="cap-d">SAM is always one tap away. On Claims it offers to act on the open claim in view.</div><div class="cap-w">writes <b>entry_point=claims</b></div></figcaption>
+    </figure>
+
+    <!-- B. SAM launcher (FAB tapped) -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet mid" style="height:80%">
+          <div class="handle"></div>
+          <div class="sheet-head">
+            <div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div>
+            <div class="sam-id"><div class="n">SAM</div><div class="r">Your medical bill advocate</div></div>
+            <span class="x">✕</span>
+          </div>
+          <div class="sheet-body">
+            <div class="launch-ctx"><div class="e">From your claim #1234</div><div class="m">Want me to look at this ambulance claim? I can explain it, check it for errors, or help you appeal a denial.</div></div>
+            <div class="cap-act"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16M4 12h16M4 19h10"/></svg></span><div class="tx"><h5>Understand a bill or EOB</h5><p>Plain-English explanation</p></div><span class="chev">›</span></div>
+            <div class="cap-act"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></span><div class="tx"><h5>Check a bill for errors &amp; overcharges</h5><p>Find money worth disputing</p></div><span class="chev">›</span></div>
+            <div class="cap-act"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span><div class="tx"><h5>Appeal a denied ambulance claim</h5><p>Build &amp; send an appeal</p></div><span class="chev">›</span></div>
+            <div class="cap-act"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></span><div class="tx"><h5>Check if you're covered</h5><p>Coverage questions</p></div><span class="soon">Soon</span></div>
+            <div class="cap-act"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span><div class="tx"><h5>Talk to a human advocate</h5><p>Hand off your case</p></div><span class="soon">Soon</span></div>
+          </div>
+        </div>
+        <div class="tabs"><div class="tab">Overview</div><div class="tab">Plan</div><div class="tab on">Claims</div><div class="tab">Travel</div><div class="tab">Care</div></div>
+      </div></div>
+      <figcaption><div class="cap-t">SAM launcher (FAB tapped)</div><div class="cap-d">Full capability set, with the contextual seed on top. Roadmap items show but are gated.</div><div class="cap-w">creates <b>case</b> · seeds <b>seed_intent</b></div></figcaption>
+    </figure>
+  </div>
+
+  <!-- ============ SECTION: INTAKE ============ -->
+  <div class="sec">2 · Intake — the checkpoint pattern (Stages 0–4)</div>
+  <p class="sec-note">Light stages live in the bottom-sheet; committing to line-item or appeal entry expands it to near-full. State machine in <code>cases.current_stage</code> + <code>machine_context</code> (resumable).</p>
+  <div class="grid">
+
+    <!-- C. Stage 0 -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet mid">
+          <div class="handle"></div>
+          <div class="sheet-head"><div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div><div class="sam-id"><div class="n">SAM</div><div class="r">Step 1 of 3</div></div><span class="x">✕</span></div>
+          <div class="sheet-body">
+            <div class="sam-msg">Hi — I'll help you sort out this bill. <b>What would you like to do first?</b></div>
+            <div class="choice sel"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16M4 12h16M4 19h10"/></svg></span><div class="tx"><h5>Understand my bill</h5><p>I'll explain the codes and the bottom line</p></div><span class="radio"></span></div>
+            <div class="choice"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></span><div class="tx"><h5>Check it for errors &amp; overcharges</h5><p>A line-by-line audit for money to dispute</p></div><span class="radio"></span></div>
+            <div class="choice"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span><div class="tx"><h5>Appeal a denied ambulance claim</h5><p>Build an appeal grounded in coverage rules</p></div><span class="radio"></span></div>
+          </div>
+          <div class="sheet-foot"><button class="pill purple">Continue</button></div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Stage 0 — Intent checkpoint</div><div class="cap-d">The upfront fork. The default narrative still leads with “Understand,” then offers the audit after value.</div><div class="cap-w">writes <b>problem_type</b></div></figcaption>
+    </figure>
+
+    <!-- D. Stage 1 -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet mid">
+          <div class="handle"></div>
+          <div class="sheet-head"><div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div><div class="sam-id"><div class="n">SAM</div><div class="r">Step 2 of 3</div></div><span class="x">✕</span></div>
+          <div class="sheet-body">
+            <p class="q">How are you covered for this bill?</p>
+            <div class="opt-grid">
+              <div class="opt sel">Medicare</div>
+              <div class="opt">Medicare Advantage</div>
+              <div class="opt">Commercial / ACA</div>
+              <div class="opt">Employer plan</div>
+              <div class="opt">Medicaid</div>
+              <div class="opt">Self-pay</div>
+            </div>
+            <div class="fld" style="margin-top:16px"><label>Plan or member ID <span style="color:var(--harbor);font-weight:400">(optional)</span></label><input class="input ph" value="If it's handy — I can pull plan terms"></div>
+            <p class="hint">This decides which rules and appeal pathways apply. Medicaid and self-pay take different routes.</p>
+          </div>
+          <div class="sheet-foot"><button class="pill purple">Continue</button></div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Stage 1 — Insurance situation</div><div class="cap-d">Sets Axis 2 and routing short-circuits (Medicaid / self-pay).</div><div class="cap-w">writes <b>insurance_situation</b>, <b>plan_identifier</b></div></figcaption>
+    </figure>
+
+    <!-- E. Stage 2 -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet mid">
+          <div class="handle"></div>
+          <div class="sheet-head"><div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div><div class="sam-id"><div class="n">SAM</div><div class="r">Step 3 of 3</div></div><span class="x">✕</span></div>
+          <div class="sheet-body">
+            <p class="q">Tell me about the bill</p>
+            <div class="fld"><label>Provider</label><input class="input" value="Mercy General Hospital"></div>
+            <div class="two"><div class="fld"><label>Date of service</label><input class="input" value="03 / 04 / 2026"></div><div class="fld"><label>Total billed</label><input class="input" value="$1,240.00"></div></div>
+            <div class="two"><div class="fld"><label>Plan paid</label><input class="input" value="$0.00"></div><div class="fld"><label>You owe</label><input class="input" value="$1,240.00"></div></div>
+            <div class="fld"><label>Any denial codes you can read? <span style="color:var(--harbor);font-weight:400">(optional)</span></label><input class="input" value="CARC 50"></div>
+            <p class="hint">A denial code helps me route you to the right next step automatically.</p>
+          </div>
+          <div class="sheet-foot"><button class="pill purple">Explain my bill</button></div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Stage 2 — Bill-level capture</div><div class="cap-d">Always runs. Enough for Flow 1 reconciliation; a denial code pre-fires the §5 router.</div><div class="cap-w">writes <b>bill_summaries</b>, <b>captured_denial_codes</b></div></figcaption>
+    </figure>
+
+    <!-- F. Stage 3 (near-full) -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet tall">
+          <div class="handle"></div>
+          <div class="sheet-head"><div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div><div class="sam-id"><div class="n">Add your bill lines</div><div class="r">One line at a time — partial is fine</div></div><span class="x">✕</span></div>
+          <div class="sheet-body">
+            <div class="lineblk">
+              <div class="top"><b>Line 1</b><span class="detect"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.5-1.5z"/></svg> HCPCS detected</span></div>
+              <div class="fld"><input class="input" value="99214"></div>
+              <div class="two"><div class="fld"><label>Units</label><input class="input" value="1"></div><div class="fld"><label>Billed charge</label><input class="input" value="$480.00"></div></div>
+              <div class="two"><div class="fld"><label>Modifier</label><input class="input ph" value="—"></div><div class="fld"><label>Place of service</label><input class="input" value="11 · Office"></div></div>
+            </div>
+            <div class="lineblk">
+              <div class="top"><b>Line 2</b><span class="detect"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.5-1.5z"/></svg> HCPCS detected</span></div>
+              <div class="fld"><input class="input" value="80053"></div>
+              <div class="two"><div class="fld"><label>Units</label><input class="input" value="1"></div><div class="fld"><label>Billed charge</label><input class="input" value="$95.00"></div></div>
+            </div>
+            <div class="addline"><span style="font-size:18px">＋</span> Add another line</div>
+            <p class="hint">No itemized bill in front of you? <span style="color:var(--flare);font-weight:700">I can request one</span> instead.</p>
+          </div>
+          <div class="sheet-foot"><button class="pill purple">Check for errors &amp; overcharges</button></div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Stage 3 — Line-item capture (near-full)</div><div class="cap-d">Sheet expands for the heavier entry Flow 2 needs: code + units + charge + modifier + POS.</div><div class="cap-w">writes <b>bill_lines</b></div></figcaption>
+    </figure>
+
+    <!-- G. Stage 3-alt -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet mid">
+          <div class="handle"></div>
+          <div class="sheet-head"><div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div><div class="sam-id"><div class="n">SAM</div><div class="r">No itemized bill yet</div></div><span class="x">✕</span></div>
+          <div class="sheet-body">
+            <div class="sam-msg">To audit a bill I need the itemized lines — most first bills only show a summary. <b>I'll write the hospital a request for the itemized bill</b>, then pick this back up the moment it arrives.</div>
+            <div class="recon" style="background:var(--h-05)">
+              <div class="rr"><span>Sent to</span><b>Mercy General Hospital</b></div>
+              <div class="rr"><span>Requesting</span><b>Itemized statement (CPT/HCPCS)</b></div>
+              <div class="rr"><span>For service on</span><b>03 / 04 / 2026</b></div>
+            </div>
+            <p class="hint">You'll get a notification when it's time to resume the error check. Nothing is lost — your case is saved.</p>
+          </div>
+          <div class="sheet-foot"><button class="pill purple">Generate the request letter</button><div class="escal">Skip — I'll add lines manually</div></div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Stage 3-alt — No-codes path</div><div class="cap-d">Graceful exit when the member can't supply codes: generate the request, resume Flow 2 later.</div><div class="cap-w">writes <b>itemized_bill_requests</b></div></figcaption>
+    </figure>
+
+    <!-- H. Stage 4 (near-full) -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet tall">
+          <div class="handle"></div>
+          <div class="sheet-head"><div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div><div class="sam-id"><div class="n">Your ambulance claim</div><div class="r">For the appeal &amp; the dollar estimate</div></div><span class="x">✕</span></div>
+          <div class="sheet-body">
+            <div class="two"><div class="fld"><label>Transport code</label><input class="input" value="A0429"></div><div class="fld"><label>Modifier</label><input class="input" value="RH"></div></div>
+            <div class="two"><div class="fld"><label>Denial code</label><input class="input" value="CARC 50"></div><div class="fld"><label>Denial letter date</label><input class="input" value="03 / 20 / 2026"></div></div>
+            <div class="togrow"><span>Was it an emergency?</span><div class="toggle"></div></div>
+            <div class="two"><div class="fld"><label>Picked up at</label><input class="input ph" value="Origin"></div><div class="fld"><label>Taken to</label><input class="input ph" value="Destination"></div></div>
+            <div class="fld"><label>Loaded miles <span style="color:var(--harbor);font-weight:400">(optional)</span></label><input class="input" value="12"></div>
+            <div class="honesty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><p>Loaded miles are the miles you were actually carried — often on the bill or run sheet. With it I give the full Medicare amount; without it, a floor.</p></div>
+          </div>
+          <div class="sheet-foot"><button class="pill purple">Review my appeal</button></div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Stage 4 — Ambulance appeal capture (near-full)</div><div class="cap-d">Transport + denial + emergency + optional loaded mileage for the base-plus-mileage anchor.</div><div class="cap-w">writes <b>ambulance_claims</b></div></figcaption>
+    </figure>
+  </div>
+
+  <!-- ============ SECTION: OUTPUTS ============ -->
+  <div class="sec">3 · Answer cards — one structure, three flows</div>
+  <p class="sec-note">Every output: headline → the number → why (with citations) → one next action → “appears to / likely” framing → human-advocate escalation. Persisted to <code>answer_cards</code> + <code>card_citations</code>.</p>
+  <div class="grid">
+
+    <!-- I. Flow 1 -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet tall">
+          <div class="handle"></div>
+          <div class="sheet-head"><div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div><div class="sam-id"><div class="n">SAM</div><div class="r">Flow 1 · Bill explanation</div></div><span class="x">✕</span></div>
+          <div class="sheet-body">
+            <span class="ac-eyebrow">Here's what your bill says</span>
+            <p class="ac-headline">The charge was denied as “not medically necessary” — and that's appealable.</p>
+            <div class="recon">
+              <div class="rr"><span>Billed</span><b>$1,240.00</b></div>
+              <div class="rr"><span>Plan allowed</span><b>$0.00</b></div>
+              <div class="rr"><span>Plan paid</span><b>$0.00</b></div>
+              <div class="rr tot"><span>You owe</span><b>$1,240.00</b></div>
+            </div>
+            <div class="why">
+              <h6>What the codes mean</h6>
+              <div class="find"><span class="b err"></span><div class="c"><h6>CARC 50 — not medically necessary</h6><p>The payer decided this service wasn't covered as necessary. This is one of the most commonly overturned denials.<span class="cite">source · CARC 50</span></div></div>
+              <div class="find"><span class="b ok"></span><div class="c"><h6>99214 — office visit (rate only)</h6><p>I can show the Medicare rate for this code, but the AMA license means I can't print the full description.<span class="cite">source · HCPCS / PFS</span></div></div>
+            </div>
+          </div>
+          <div class="sheet-foot"><button class="pill purple">Check this bill for errors &amp; overcharges</button><div class="escal">This looks like a denial — help me appeal →</div></div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Flow 1 — Explanation + checkpoint</div><div class="cap-d">Free clarity first, then the progressive checkpoint. Surfaces the hand-off to Flow 2/3.</div><div class="cap-w">reads <b>code_explanations</b>, <b>sbc_fields</b></div></figcaption>
+    </figure>
+
+    <!-- J. Flow 2 -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet tall">
+          <div class="handle"></div>
+          <div class="sheet-head"><div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div><div class="sam-id"><div class="n">SAM</div><div class="r">Flow 2 · Error &amp; overcharge check</div></div><span class="x">✕</span></div>
+          <div class="sheet-body">
+            <span class="ac-eyebrow">I found 2 things worth disputing</span>
+            <p class="ac-headline">$95 looks like a billing error, and one line is ≈4× the Medicare rate.</p>
+            <div class="num-split">
+              <div class="ns-err"><div class="k">LIKELY ERROR</div><div class="v">$95</div><div class="s">ask to have removed</div></div>
+              <div class="ns-lev"><div class="k">OVER BENCHMARK</div><div class="v">≈4.4×</div><div class="s">negotiation leverage</div></div>
+            </div>
+            <div class="why">
+              <h6>Why</h6>
+              <div class="find"><span class="b err"></span><div class="c"><h6>Possible unbundling — 80053 + 80048</h6><p>These appear to be billed separately when one includes the other.<span class="cite">NCCI PTP · indicator 0</span></div></div>
+              <div class="find"><span class="b lev"></span><div class="c"><h6>99214 billed at $480</h6><p>That's about 4.4× the Medicare benchmark for an office visit — a strong basis to ask for a reduction.<span class="cite">PFS · non-facility · POS 11</span></div></div>
+            </div>
+          </div>
+          <div class="sheet-foot"><button class="pill purple">Send a correction request</button><div class="frame-note">These appear to be errors based on Medicare coding rules — not a final determination of what you owe.</div><div class="escal">Talk to a human advocate →</div></div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Flow 2 — Two-tier savings</div><div class="cap-d">Recoverable errors vs. ×-Medicare leverage, kept honest and distinct. CTA is situation-aware.</div><div class="cap-w">reads <b>ncci_ptp_edits / mue / pfs</b> → <b>flow2_findings</b></div></figcaption>
+    </figure>
+
+    <!-- K. Flow 3 -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="status onlight"><span class="t">9:41</span><span class="r"><span class="bars"></span><span class="wifi">📶</span><span class="batt"></span></span></div>
+        <div class="dim"></div>
+        <div class="sheet tall">
+          <div class="handle"></div>
+          <div class="sheet-head"><div class="sam-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><circle cx="18" cy="17" r="2.4"/></svg></div><div class="sam-id"><div class="n">SAM</div><div class="r">Flow 3 · Ambulance appeal</div></div><span class="x">✕</span></div>
+          <div class="sheet-body">
+            <span class="ac-eyebrow">This denial looks appealable</span>
+            <p class="ac-headline">Your transport appears to meet Medicare's medical-necessity criteria.</p>
+            <div class="num-card"><div class="k">MEDICARE REASONABLE AMOUNT</div><div class="v">≈ $546</div><div class="x2">base ($450) + 12 loaded miles ($96)</div></div>
+            <div class="why">
+              <h6>Why it's appealable</h6>
+              <div class="find"><span class="b err"></span><div class="c"><h6>Denied on CARC 50 — not medically necessary</h6><p>That's the basis we answer directly.<span class="cite">CARC 50</span></div></div>
+              <div class="find"><span class="b ok"></span><div class="c"><h6>Meets NCD 10.1 emergency criteria</h6><p>Coverage criteria support a medically necessary emergency transport.<span class="cite">NCD 10.1 · reviewed</span></div></div>
+            </div>
+            <div class="pathway"><p class="pl">Level 1 — Redetermination</p><p class="dl">File with your MAC by <b>Jul 18, 2026</b> (120 days).</p><p class="caveat">Always verify the current deadline on your denial letter before filing.</p></div>
+            <div class="honesty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><p>Ground ambulance isn't covered by the federal No Surprises Act — so this appeal rests on medical necessity and your plan terms, not surprise-billing protections.</p></div>
+          </div>
+          <div class="sheet-foot"><button class="pill purple">Generate my appeal letter</button><div class="frame-note">Appeal letters are reviewed before they're finalized. Coverage decisions remain your plan's.</div><div class="escal">Talk to a human advocate →</div></div>
+        </div>
+      </div></div>
+      <figcaption><div class="cap-t">Flow 3 — Appeal package</div><div class="cap-d">Denial basis → NCD grounding → pathway + deadline → dollar anchor → ground-ambulance honesty node.</div><div class="cap-w">reads <b>ncd_ambulance / appeal_levels / ambulance_fs</b> → <b>flow3_appeals</b></div></figcaption>
+    </figure>
+  </div>
+
+</div>
+</body>
+</html>

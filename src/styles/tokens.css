@@ -1,0 +1,48 @@
+/* ============================================================================
+   MASA brand tokens — source of truth for SAM app styling.
+   Lifted from docs/SAM_screens_v0_1.html. Keep brand decisions here; do not
+   scatter raw hex values across components. Import this once at the app root.
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap');
+
+:root{
+  /* --- Core MASA palette (official) --- */
+  --masa-horizon:#230871;   /* PRIMARY — headlines, CTAs, advocate actions, borders */
+  --masa-tide:#0071CE;      /* SECONDARY — ×-Medicare leverage signal, links/highlights */
+  --masa-flare:#E64B38;     /* ACCENT — RESERVED for links & escalation ONLY */
+  --masa-shine:#FFD040;     /* ACCENT — honesty/caution nodes; sparingly */
+  --masa-harbor:#968694;    /* NEUTRAL — dividers, captions, muted text */
+  --masa-ink:#222222;       /* body copy */
+  --masa-white:#ffffff;
+
+  /* --- Horizon / Tide tints (background & watermark fills) --- */
+  --horizon-05:#f3f1f9;
+  --horizon-10:#e8e5f4;
+  --horizon-20:#d2cce8;
+  --tide-10:#e5f1fb;
+
+  /* --- App surface tokens (from the screen set) --- */
+  --surface-card:#edeef6;
+  --surface-field:#f1f2f7;
+  --line:#e3e1ec;
+  --radius:16px;
+
+  /* --- Type roles --- */
+  --font-display:"Poppins",system-ui,Arial,sans-serif;  /* headlines / CTAs */
+  --font-body:"Open Sans",system-ui,Arial,sans-serif;   /* body copy */
+}
+
+/* --- Base typography --- */
+body{ font-family:var(--font-body); color:var(--masa-ink); -webkit-font-smoothing:antialiased; }
+h1,h2,h3,h4,h5,h6{ font-family:var(--font-display); font-weight:700;
+  color:var(--masa-horizon); letter-spacing:-.3px; } /* sentence case — do not uppercase */
+
+/* --- Brand rules encoded as utilities (extend as needed) --- */
+.btn-primary{ background:var(--masa-horizon); color:#fff; font-family:var(--font-display);
+  font-weight:600; border:none; border-radius:30px; padding:15px; cursor:pointer; }
+.link{ color:var(--masa-flare); font-weight:700; }   /* Flare ONLY here and on escalation */
+.leverage{ color:var(--masa-tide); }                  /* the "≈N× Medicare" leverage signal */
+.muted{ color:var(--masa-harbor); }
+.card{ background:var(--surface-card); border-radius:14px; }
+.field{ background:var(--surface-field); border:none; border-radius:11px; }

@@ -1,0 +1,18 @@
+# ============================================================================
+# config/escalation.yaml  |  v0.1
+# When SAM surfaces / triggers the in-house human-advocate handoff (PRD §7.7).
+# Maps to handoffs.handoff_type. Wellthy is under evaluation as a future partner.
+# ============================================================================
+version: "0.1"
+human_advocate:
+  default_handoff_type: in_house_advocate     # handoffs.handoff_type enum
+  partner_under_evaluation: wellthy           # future third_party_case_manager
+  triggers:
+    - id: strong_leverage_finding             # PFS 5×+ benchmark (§6.2 / pricing_thresholds)
+      reason: "Charge far exceeds the Medicare benchmark — advocate negotiation."
+    - id: air_ambulance_out_of_scope          # A0430/A0431/A0435/A0436 (§6.3, §10 #11)
+      reason: "Air ambulance is handled differently and may involve federal protections."
+    - id: timely_filing_member_billed         # CARC 29 escalate-if-billed (§5.2)
+      reason: "Timely-filing denial is generally the provider's issue; member should not owe."
+    - id: member_requested                    # explicit member ask (§7.7)
+      reason: "Member requested a human advocate."

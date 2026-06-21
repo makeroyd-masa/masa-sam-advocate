@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# Databases
+# read-only reference data from the medical_billing_data repo — never commit
+data/pilot.db
+# writable case/state store — created from docs/app_schema_v0_1.sql
+app.db
+*.sqlite
+*.sqlite3
+# SQLite runtime sidecars (WAL / shared-memory / rollback journal)
+*.db-shm
+*.db-wal
+*.db-journal
+
+# Env / secrets
+.env
+.env.local
+
+# Python / test caches
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Build output
+dist/
+build/
+.vite/
+
+# Claude Code personal overrides
+.claude/settings.local.json
+
+# OS / editor
+.DS_Store
+*.log
+.idea/
+.vscode/

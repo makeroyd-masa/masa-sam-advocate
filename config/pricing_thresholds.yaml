@@ -1,0 +1,16 @@
+# ============================================================================
+# config/pricing_thresholds.yaml  |  v0.1
+# Flow 2 PFS above-benchmark tier bands (PRD §6.2, §10 #3).
+# Multiple = billed_charge ÷ Medicare benchmark (PFS, POS-selected column).
+# Boundaries are TUNABLE as real bills arrive — only these numbers change, not
+# the engine. `tier` values map 1:1 to flow2_findings.benchmark_tier enum.
+#
+# Engine rule: pick the FIRST band whose `max_multiple` is null (open-ended) or
+# strictly greater than the computed multiple. `surface:false` = don't show.
+# ============================================================================
+version: "0.1"
+tiers:
+  - { max_multiple: 2.0,  tier: below_threshold, surface: false, suggest_escalation: false, label: "" }
+  - { max_multiple: 3.0,  tier: higher_side,     surface: true,  suggest_escalation: false, label: "on the higher side" }
+  - { max_multiple: 5.0,  tier: solid_leverage,  surface: true,  suggest_escalation: false, label: "solid negotiation leverage" }
+  - { max_multiple: null, tier: strong_leverage, surface: true,  suggest_escalation: true,  label: "strong leverage" }
