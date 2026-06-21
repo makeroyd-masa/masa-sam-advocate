@@ -1,0 +1,242 @@
+[
+  {
+    "category": "pfs_pos_flip",
+    "expected": {
+      "findings": [
+        {
+          "benchmark_cents": 40889,
+          "billed_multiple": 4.0,
+          "code": "44404",
+          "setting": "non_facility",
+          "tier": "solid_leverage",
+          "type": "price_benchmark"
+        }
+      ],
+      "leverage_top_multiple": 4.0,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "flow2_pfs_posflip_office_001",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 163556,
+          "encounter_pos": "11",
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "44404",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "44404"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  },
+  {
+    "category": "pfs_pos_flip",
+    "expected": {
+      "findings": [
+        {
+          "benchmark_cents": 16535,
+          "billed_multiple": 9.89,
+          "code": "44404",
+          "setting": "facility",
+          "tier": "strong_leverage",
+          "type": "price_benchmark"
+        }
+      ],
+      "leverage_top_multiple": 9.89,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "flow2_pfs_posflip_hospital_001",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 163556,
+          "encounter_pos": "21",
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "44404",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "44404"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  },
+  {
+    "category": "pfs_pos_flip",
+    "expected": {
+      "findings": [
+        {
+          "benchmark_cents": 77042,
+          "billed_multiple": 4.0,
+          "code": "21029",
+          "setting": "non_facility",
+          "tier": "solid_leverage",
+          "type": "price_benchmark"
+        }
+      ],
+      "leverage_top_multiple": 4.0,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "flow2_pfs_posflip_office_002",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 308168,
+          "encounter_pos": "11",
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "21029",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "21029"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  },
+  {
+    "category": "pfs_pos_flip",
+    "expected": {
+      "findings": [
+        {
+          "benchmark_cents": 62749,
+          "billed_multiple": 4.91,
+          "code": "21029",
+          "setting": "facility",
+          "tier": "solid_leverage",
+          "type": "price_benchmark"
+        }
+      ],
+      "leverage_top_multiple": 4.91,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "flow2_pfs_posflip_hospital_002",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 308168,
+          "encounter_pos": "21",
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "21029",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "21029"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  },
+  {
+    "category": "pfs_pos_flip",
+    "expected": {
+      "findings": [
+        {
+          "benchmark_cents": 20165,
+          "billed_multiple": 4.0,
+          "code": "15121",
+          "setting": "non_facility",
+          "tier": "solid_leverage",
+          "type": "price_benchmark"
+        }
+      ],
+      "leverage_top_multiple": 4.0,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "flow2_pfs_posflip_office_003",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 80660,
+          "encounter_pos": "11",
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "15121",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "15121"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  },
+  {
+    "category": "pfs_pos_flip",
+    "expected": {
+      "findings": [
+        {
+          "benchmark_cents": 12659,
+          "billed_multiple": 6.37,
+          "code": "15121",
+          "setting": "facility",
+          "tier": "strong_leverage",
+          "type": "price_benchmark"
+        }
+      ],
+      "leverage_top_multiple": 6.37,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "flow2_pfs_posflip_hospital_003",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 80660,
+          "encounter_pos": "21",
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "15121",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "15121"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  }
+]

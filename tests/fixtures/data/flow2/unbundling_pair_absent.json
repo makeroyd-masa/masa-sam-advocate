@@ -1,0 +1,562 @@
+[
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "A4409",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "E2201",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 0,
+          "code": "E2201",
+          "recoverable_cents": 18000,
+          "type": "quantity_mue",
+          "units_over": 1
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 18000
+    },
+    "fixture_id": "flow2_unbundling_absent_001",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 12000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "A4409",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 18000,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "E2201",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A4409",
+        "E2201"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "A4680",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "C7556",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 0,
+          "code": "A4680",
+          "recoverable_cents": 6000,
+          "type": "quantity_mue",
+          "units_over": 1
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 6000
+    },
+    "fixture_id": "flow2_unbundling_absent_002",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 7500,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "C7556",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 6000,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "A4680",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "C7556",
+        "A4680"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "A6456",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "G9550",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 0,
+          "code": "A6456",
+          "recoverable_cents": 24000,
+          "type": "quantity_mue",
+          "units_over": 1
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 24000
+    },
+    "fixture_id": "flow2_unbundling_absent_003",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 18000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "G9550",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 24000,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "A6456",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "G9550",
+        "A6456"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "E0194",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "G9796",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 0,
+          "code": "E0194",
+          "recoverable_cents": 6000,
+          "type": "quantity_mue",
+          "units_over": 1
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 6000
+    },
+    "fixture_id": "flow2_unbundling_absent_004",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 6000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "E0194",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 4500,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "G9796",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "E0194",
+        "G9796"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "E0629",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "G8728",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 0,
+          "code": "E0629",
+          "recoverable_cents": 24000,
+          "type": "quantity_mue",
+          "units_over": 1
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 24000
+    },
+    "fixture_id": "flow2_unbundling_absent_005",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 24000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "E0629",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 15000,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "G8728",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "E0629",
+        "G8728"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "C9742",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "G6024",
+          "type": "facility_unbenchmarked"
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "flow2_unbundling_absent_006",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 4500,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "G6024",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 9500,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "C9742",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "G6024",
+        "C9742"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "E0160",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "E0637",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 0,
+          "code": "E0160",
+          "recoverable_cents": 15000,
+          "type": "quantity_mue",
+          "units_over": 1
+        },
+        {
+          "cap": 0,
+          "code": "E0637",
+          "recoverable_cents": 12000,
+          "type": "quantity_mue",
+          "units_over": 1
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 27000
+    },
+    "fixture_id": "flow2_unbundling_absent_007",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 15000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "E0160",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 12000,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "E0637",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "E0160",
+        "E0637"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "E1237",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "G9682",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 0,
+          "code": "E1237",
+          "recoverable_cents": 7500,
+          "type": "quantity_mue",
+          "units_over": 1
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 7500
+    },
+    "fixture_id": "flow2_unbundling_absent_008",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 9500,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "G9682",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 7500,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "E1237",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "G9682",
+        "E1237"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "A9606",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "E0849",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 0,
+          "code": "E0849",
+          "recoverable_cents": 18000,
+          "type": "quantity_mue",
+          "units_over": 1
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 18000
+    },
+    "fixture_id": "flow2_unbundling_absent_009",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 12000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "A9606",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 18000,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "E0849",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A9606",
+        "E0849"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "unbundling_pair_absent",
+    "expected": {
+      "findings": [
+        {
+          "code": "C9794",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "E0830",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 0,
+          "code": "E0830",
+          "recoverable_cents": 6000,
+          "type": "quantity_mue",
+          "units_over": 1
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 6000
+    },
+    "fixture_id": "flow2_unbundling_absent_010",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 7500,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "C9794",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 6000,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "E0830",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "C9794",
+        "E0830"
+      ],
+      "source_table": "codes"
+    }
+  }
+]

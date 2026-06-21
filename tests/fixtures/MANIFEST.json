@@ -1,0 +1,100 @@
+{
+  "fixture_counts": {
+    "mue_at_cap": 10,
+    "mue_cap_plus_1": 10,
+    "mue_over_cap": 10,
+    "pfs_2_3x": 8,
+    "pfs_3_5x": 8,
+    "pfs_5x_plus": 8,
+    "pfs_cpt_numbered": 5,
+    "pfs_pos_flip": 6,
+    "pfs_sub_2x": 10,
+    "unbundling_indicator_0": 15,
+    "unbundling_indicator_1_no_modifier": 10,
+    "unbundling_indicator_1_valid_modifier": 10,
+    "unbundling_indicator_9": 5,
+    "unbundling_pair_absent": 10
+  },
+  "generator_version": "0.2.0",
+  "seed": 1337,
+  "sources": {
+    "codes": [
+      {
+        "file_hash": "4f6c65f0034736d2b02fa9eb1128aab564fa673dd4d99363f8b2167af3994816",
+        "row_count": 97584,
+        "source_id": "a01_icd10cm"
+      },
+      {
+        "file_hash": "515198d2fc5caff19d6e29b68a276174157c9e53a486c1a0bdf239f1ecb1f2cd",
+        "row_count": 78986,
+        "source_id": "a02_icd10pcs"
+      },
+      {
+        "file_hash": "7fd2c5752e2551960e98acf62d60d789a97796e0cf0f962bd03645088be4be5f",
+        "row_count": 8846,
+        "source_id": "a03_hcpcs"
+      },
+      {
+        "file_hash": "no_download",
+        "row_count": 1,
+        "source_id": "a04_cpt_handling"
+      },
+      {
+        "file_hash": "1dc0290ae8f2f0a97995959cf58e02416342382deae1eaff3fb1c1a4223588ff",
+        "row_count": 308,
+        "source_id": "a05_carc"
+      },
+      {
+        "file_hash": "fc8760671e1ffa618f60057fd9fe17420319071405d3aef439899f19a148f57b",
+        "row_count": 1198,
+        "source_id": "a06_rarc"
+      },
+      {
+        "file_hash": "manual_import",
+        "row_count": 196,
+        "source_id": "a07_revenue"
+      },
+      {
+        "file_hash": "cfe3ca7e3b130e5ddfc34a1be8b1541d0dc564565c315ad370b54af364961ef1",
+        "row_count": 53,
+        "source_id": "a08_pos"
+      },
+      {
+        "file_hash": "7fd2c5752e2551960e98acf62d60d789a97796e0cf0f962bd03645088be4be5f",
+        "row_count": 383,
+        "source_id": "a09_modifiers"
+      },
+      {
+        "file_hash": "5e2fdd3f47dc83fc9d1eacb7136e2ce3f03c105a3cecdf67ec5f7e3778c49fc5",
+        "row_count": 771,
+        "source_id": "a10_ms_drg"
+      },
+      {
+        "file_hash": "a199d123091248402c750ce81abea2c055f9db3a62a6f56c07b898fd97de5ef6",
+        "row_count": 113516,
+        "source_id": "a11_ndc"
+      }
+    ],
+    "ncci_mue": [
+      {
+        "file_hash": "manual",
+        "row_count": 15162,
+        "source_id": "c06_ncci_mue"
+      }
+    ],
+    "ncci_ptp_edits": [
+      {
+        "file_hash": "manual",
+        "row_count": 2633389,
+        "source_id": "c06_ncci_ptp"
+      }
+    ],
+    "physician_fee_schedule": [
+      {
+        "file_hash": "38b377e41611150c78915333f06ea26ac25f3ed3b2ae61cf560c712ec20c1387",
+        "row_count": 9135,
+        "source_id": "c02_physician_fee_schedule"
+      }
+    ]
+  }
+}
