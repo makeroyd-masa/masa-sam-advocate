@@ -18,7 +18,7 @@ import sqlite3
 from dataclasses import dataclass, field
 
 from . import pilot
-from .codes import parse_denial_code
+from .codes import clean_official_text, parse_denial_code
 
 # suggested_action → which engine the case should move toward.
 ACTION_TO_FLOW = {
@@ -65,7 +65,7 @@ def _resolve_copy(
                 source="authored",
                 plain_explanation=plain,
                 practical_meaning=(explanation.get("practical_meaning") or "").strip() or None,
-                official_text=explanation.get("official_text"),
+                official_text=clean_official_text(explanation.get("official_text")),
                 label="What this means",
             )
         official = explanation.get("official_text")
@@ -75,8 +75,8 @@ def _resolve_copy(
         source="official_fallback",
         plain_explanation=None,
         practical_meaning=None,
-        official_text=official,
-        label="The payer's exact language",
+        official_text=clean_official_text(official),
+        label="The payer's official reason",
     )
 
 

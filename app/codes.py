@@ -50,6 +50,26 @@ def detect_denial_code_type(code: str) -> str:
     return "RARC" if _RARC.fullmatch(c) else "CARC"
 
 
+# X12/WPC descriptions carry administrative tails after the human-readable reason
+# ("Usage: Refer to the 835 …", "Start: …", "Last Modified: …", "Notes: …").
+# We display only the reason; the full text stays in pilot.db for provenance.
+_X12_TAILS = ("Usage:", "Start:", "Last Modified:", "Notes:")
+
+
+def clean_official_text(text: str | None) -> str | None:
+    """Trim X12 administrative boilerplate from a code's official description so the
+    fallback reads as a plain sentence. Not authoring — just presenting the source."""
+    if not text:
+        return text
+    cut = len(text)
+    for marker in _X12_TAILS:
+        i = text.find(marker)
+        if i != -1:
+            cut = min(cut, i)
+    cleaned = text[:cut].strip().rstrip("|").strip()
+    return cleaned or text.strip()
+
+
 _DENIAL_PREFIX = re.compile(r"^\s*(CARC|RARC)\b[:\s]*", re.IGNORECASE)
 
 
