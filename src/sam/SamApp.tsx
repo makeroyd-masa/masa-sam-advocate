@@ -15,6 +15,10 @@ type Step =
 
 const SEED_NOTE = "Want me to look at this ambulance claim? I can explain it, check it for errors, or help you appeal a denial.";
 
+// explain ends at the answer card after Stage 2 (3 steps); error/appeal have a
+// 4th step (line-item / ambulance capture).
+const totalSteps = (pt: ProblemType) => (pt === "explain" ? 3 : 4);
+
 export function SamApp() {
   const [step, setStep] = useState<Step>("closed");
   const [caseId, setCaseId] = useState<number | null>(null);
@@ -113,10 +117,14 @@ export function SamApp() {
 
       {step === "launcher" && <Launcher seedNote={SEED_NOTE} onPick={pickIntent} onClose={reset} />}
       {step === "stage0" && <Stage0 initial={intent} onContinue={continue0} onClose={reset} busy={busy} />}
-      {step === "stage1" && <Stage1 onContinue={continue1} onClose={reset} busy={busy} />}
+      {step === "stage1" && (
+        <Stage1 onContinue={continue1} onClose={reset} busy={busy} total={totalSteps(intent)} />
+      )}
       {step === "stage2" && (
-        <Stage2 onContinue={continue2} onClose={reset} busy={busy}
-          ctaLabel={intent === "explain" ? "Explain my bill" : intent === "denial_appeal" ? "Continue" : "Next"} />
+        <Stage2 onContinue={continue2} onClose={reset} busy={busy} total={totalSteps(intent)}
+          ctaLabel={intent === "explain" ? "Explain my bill"
+            : intent === "denial_appeal" ? "Next: your ambulance claim"
+            : "Next: add your bill lines"} />
       )}
       {step === "stage3" && <Stage3 onCheck={check3} onNoBill={() => setStep("stage3alt")} onClose={reset} busy={busy} />}
       {step === "stage3alt" && (

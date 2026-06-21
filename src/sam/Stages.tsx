@@ -65,7 +65,7 @@ export function Stage0({ initial, onContinue, onClose, busy }:
   { initial?: ProblemType; onContinue: (pt: ProblemType) => void; onClose: () => void; busy: boolean }) {
   const [sel, setSel] = useState<ProblemType>(initial ?? "explain");
   return (
-    <Sheet subtitle="Step 1 of 3" onClose={onClose}
+    <Sheet subtitle={`Step 1 of ${sel === "explain" ? 3 : 4}`} onClose={onClose}
       foot={<button className="pill purple" disabled={busy} onClick={() => onContinue(sel)}>Continue</button>}>
       <div className="sam-msg">Hi — I'll help you sort out this bill. <b>What would you like to do first?</b></div>
       {INTENTS.map((it) => (
@@ -88,12 +88,13 @@ const SITUATIONS: { v: InsuranceSituation; label: string }[] = [
   { v: "medicaid", label: "Medicaid" },
   { v: "self_pay", label: "Self-pay" },
 ];
-export function Stage1({ onContinue, onClose, busy }:
-  { onContinue: (ins: InsuranceSituation, plan?: string) => void; onClose: () => void; busy: boolean }) {
+export function Stage1({ onContinue, onClose, busy, total }:
+  { onContinue: (ins: InsuranceSituation, plan?: string) => void; onClose: () => void;
+    busy: boolean; total: number }) {
   const [sel, setSel] = useState<InsuranceSituation>("medicare_ffs");
   const [plan, setPlan] = useState("");
   return (
-    <Sheet subtitle="Step 2 of 3" onClose={onClose}
+    <Sheet subtitle={`Step 2 of ${total}`} onClose={onClose}
       foot={<button className="pill purple" disabled={busy} onClick={() => onContinue(sel, plan || undefined)}>Continue</button>}>
       <p className="q">How are you covered for this bill?</p>
       <div className="opt-grid">
@@ -112,8 +113,9 @@ export function Stage1({ onContinue, onClose, busy }:
 }
 
 // --- Frame 5: Stage 2 bill-level ------------------------------------------
-export function Stage2({ onContinue, onClose, busy, ctaLabel }:
-  { onContinue: (p: Record<string, unknown>) => void; onClose: () => void; busy: boolean; ctaLabel: string }) {
+export function Stage2({ onContinue, onClose, busy, ctaLabel, total }:
+  { onContinue: (p: Record<string, unknown>) => void; onClose: () => void; busy: boolean;
+    ctaLabel: string; total: number }) {
   const [f, setF] = useState({ provider: "", dos: "", billed: "", paid: "", owe: "", denial: "" });
   const up = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
   const submit = () => onContinue({
@@ -125,7 +127,7 @@ export function Stage2({ onContinue, onClose, busy, ctaLabel }:
     denial_codes: f.denial ? [f.denial] : [],
   });
   return (
-    <Sheet subtitle="Step 3 of 3" onClose={onClose}
+    <Sheet subtitle={`Step 3 of ${total}`} onClose={onClose}
       foot={<button className="pill purple" disabled={busy} onClick={submit}>{ctaLabel}</button>}>
       <p className="q">Tell me about the bill</p>
       <div className="fld"><label>Provider</label>
@@ -161,7 +163,8 @@ export function Stage3({ onCheck, onNoBill, onClose, busy }:
     encounter_pos: l.pos.split(/\s|·/)[0] || null,
   })));
   return (
-    <Sheet subtitle="One line at a time — partial is fine" tall onClose={onClose} title="Add your bill lines"
+    <Sheet subtitle="Step 4 of 4 · one line at a time — partial is fine" tall onClose={onClose}
+      title="Add your bill lines"
       foot={<button className="pill purple" disabled={busy} onClick={submit}>Check for errors & overcharges</button>}>
       {lines.map((l, i) => {
         const d = detect(l.raw_code);
@@ -225,7 +228,8 @@ export function Stage4({ onReview, onClose, busy, error }:
     state: f.state || null,
   });
   return (
-    <Sheet subtitle="For the appeal & the dollar estimate" tall onClose={onClose} title="Your ambulance claim"
+    <Sheet subtitle="Step 4 of 4 · for the appeal & dollar estimate" tall onClose={onClose}
+      title="Your ambulance claim"
       foot={<button className="pill purple" disabled={busy} onClick={submit}>Review my appeal</button>}>
       {error && <div className="sam-error">{error}</div>}
       <div className="two">
