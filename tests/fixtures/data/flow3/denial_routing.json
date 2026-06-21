@@ -1,0 +1,140 @@
+[
+  {
+    "category": "denial_routing",
+    "expected": {
+      "action": "appeal",
+      "kind": "routing",
+      "target_flow": "flow3_appeal"
+    },
+    "fixture_id": "flow3_routing_001",
+    "flow": 3,
+    "input": {
+      "code": "50",
+      "code_type": "CARC",
+      "insurance_situation": "medicare_ffs",
+      "member_billed": false
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:50"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "denial_routing",
+    "expected": {
+      "action": "appeal",
+      "kind": "routing",
+      "target_flow": "flow3_appeal"
+    },
+    "fixture_id": "flow3_routing_002",
+    "flow": 3,
+    "input": {
+      "code": "197",
+      "code_type": "CARC",
+      "insurance_situation": "medicare_ffs",
+      "member_billed": false
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:197"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "denial_routing",
+    "expected": {
+      "action": "error_check",
+      "kind": "routing",
+      "target_flow": "flow2_error"
+    },
+    "fixture_id": "flow3_routing_003",
+    "flow": 3,
+    "input": {
+      "code": "97",
+      "code_type": "CARC",
+      "insurance_situation": "medicare_ffs",
+      "member_billed": false
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:97"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "denial_routing",
+    "expected": {
+      "action": "error_check",
+      "kind": "routing",
+      "target_flow": "flow2_error"
+    },
+    "fixture_id": "flow3_routing_004",
+    "flow": 3,
+    "input": {
+      "code": "18",
+      "code_type": "CARC",
+      "insurance_situation": "commercial_aca",
+      "member_billed": false
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:18"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "denial_routing",
+    "expected": {
+      "action": "verify_with_payer",
+      "kind": "routing",
+      "target_flow": "none"
+    },
+    "fixture_id": "flow3_routing_005",
+    "flow": 3,
+    "input": {
+      "code": "16",
+      "code_type": "CARC",
+      "insurance_situation": "medicare_ffs",
+      "member_billed": false
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:16"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "denial_routing",
+    "expected": {
+      "action": "escalate_human",
+      "kind": "routing",
+      "target_flow": "none"
+    },
+    "fixture_id": "flow3_routing_006",
+    "flow": 3,
+    "input": {
+      "code": "29",
+      "code_type": "CARC",
+      "insurance_situation": "self_pay",
+      "member_billed": true
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:29"
+      ],
+      "source_table": "codes"
+    }
+  }
+]

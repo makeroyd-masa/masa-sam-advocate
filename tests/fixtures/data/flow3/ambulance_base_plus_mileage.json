@@ -1,0 +1,482 @@
+[
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 87691,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 98671,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_001",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 12,
+        "transport_hcpcs": "A0434"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "NC"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0434@NC",
+        "A0425@NC"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 100898,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 119198,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_002",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 20,
+        "transport_hcpcs": "A0434"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "WA"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0434@WA",
+        "A0425@WA"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 53120,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 57695,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_003",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 5,
+        "transport_hcpcs": "A0427"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "AZ"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0427@AZ",
+        "A0425@AZ"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 48003,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 55323,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_004",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 8,
+        "transport_hcpcs": "A0432"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "MI"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0432@MI",
+        "A0425@MI"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 53688,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 64668,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_005",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 12,
+        "transport_hcpcs": "A0427"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "PA"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0427@PA",
+        "A0425@PA"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 54123,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 72423,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_006",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 20,
+        "transport_hcpcs": "A0427"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "TX"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0427@TX",
+        "A0425@TX"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 90863,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 95438,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_007",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 5,
+        "transport_hcpcs": "A0434"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "AZ"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0434@AZ",
+        "A0425@AZ"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 54123,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 61443,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_008",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 8,
+        "transport_hcpcs": "A0427"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "TX"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0427@TX",
+        "A0425@TX"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 49728,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 60708,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_009",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 12,
+        "transport_hcpcs": "A0432"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "FL"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0432@FL",
+        "A0425@FL"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 87347,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 105647,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_010",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 20,
+        "transport_hcpcs": "A0433"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "NY"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0433@NY",
+        "A0425@NY"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 53688,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 58263,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_011",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 5,
+        "transport_hcpcs": "A0427"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "PA"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0427@PA",
+        "A0425@PA"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "ambulance_base_plus_mileage",
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Redetermination",
+      "base_rate_cents": 91834,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 99154,
+      "segment": "medicare_ffs"
+    },
+    "fixture_id": "flow3_anchor_mileage_012",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 8,
+        "transport_hcpcs": "A0434"
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "denial_appeal",
+      "state": "PA"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0434@PA",
+        "A0425@PA"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  }
+]

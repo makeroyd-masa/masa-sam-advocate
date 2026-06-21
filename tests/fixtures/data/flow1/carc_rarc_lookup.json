@@ -1,0 +1,218 @@
+[
+  {
+    "category": "carc_rarc_lookup",
+    "expected": {
+      "appealable": true,
+      "denials_shown": [
+        "CARC 50"
+      ],
+      "lines": [],
+      "number_cents": 124000,
+      "reconciliation": "denied_claim"
+    },
+    "fixture_id": "flow1_denial_001",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 124000,
+        "total_billed_cents": 124000
+      },
+      "denial_codes": [
+        {
+          "code": "50",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:50"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "carc_rarc_lookup",
+    "expected": {
+      "appealable": true,
+      "denials_shown": [
+        "CARC 197"
+      ],
+      "lines": [],
+      "number_cents": 124000,
+      "reconciliation": "denied_claim"
+    },
+    "fixture_id": "flow1_denial_002",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 124000,
+        "total_billed_cents": 124000
+      },
+      "denial_codes": [
+        {
+          "code": "197",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:197"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "carc_rarc_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [
+        "CARC 97"
+      ],
+      "lines": [],
+      "number_cents": 124000,
+      "reconciliation": "denied_claim"
+    },
+    "fixture_id": "flow1_denial_003",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 124000,
+        "total_billed_cents": 124000
+      },
+      "denial_codes": [
+        {
+          "code": "97",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:97"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "carc_rarc_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [
+        "CARC 18"
+      ],
+      "lines": [],
+      "number_cents": 124000,
+      "reconciliation": "denied_claim"
+    },
+    "fixture_id": "flow1_denial_004",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 124000,
+        "total_billed_cents": 124000
+      },
+      "denial_codes": [
+        {
+          "code": "18",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:18"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "carc_rarc_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [
+        "CARC 16"
+      ],
+      "lines": [],
+      "number_cents": 124000,
+      "reconciliation": "denied_claim"
+    },
+    "fixture_id": "flow1_denial_005",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 124000,
+        "total_billed_cents": 124000
+      },
+      "denial_codes": [
+        {
+          "code": "16",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:16"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "carc_rarc_lookup",
+    "expected": {
+      "appealable": true,
+      "denials_shown": [
+        "RARC N386"
+      ],
+      "lines": [],
+      "number_cents": 124000,
+      "reconciliation": "denied_claim"
+    },
+    "fixture_id": "flow1_denial_006",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 124000,
+        "total_billed_cents": 124000
+      },
+      "denial_codes": [
+        {
+          "code": "N386",
+          "code_type": "RARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "RARC:N386"
+      ],
+      "source_table": "codes"
+    }
+  }
+]

@@ -9,12 +9,29 @@ same rules so the fixtures check the engine rather than mirror it.
 from __future__ import annotations
 
 import sqlite3
+from functools import lru_cache
 from itertools import combinations
 
 import canonical
+import yaml
 
 from app import pilot
-from app.config import pos_facility_map, pricing_thresholds
+from app.config import CONFIG_DIR, pos_facility_map, pricing_thresholds
+
+# Independent copy of the §5 routing → flow map (mirrors app.router, not imported).
+_ACTION_TO_FLOW = {
+    "explain_only": "flow1_explain", "error_check": "flow2_error", "appeal": "flow3_appeal",
+    "verify_with_payer": "none", "escalate_human": "none",
+}
+# insurance_situation → (flow3 segment, ncd_weight, framework, appeal plan_key)
+_SEGMENT = {
+    "medicare_ffs": ("medicare_ffs", "binding", "medicare", "traditional_medicare"),
+    "medicare_advantage": ("medicare_advantage", "binding", "medicare", "medicare_advantage"),
+    "commercial_aca": ("commercial_aca", "persuasive", "commercial", "fully_insured"),
+    "employer_erisa": ("commercial_aca", "persuasive", "commercial", "self_funded_erisa"),
+    "self_pay": ("commercial_aca", "persuasive", "commercial", "fully_insured"),
+    "medicaid": ("commercial_aca", "persuasive", "commercial", "fully_insured"),
+}
 
 
 # --- independent reimplementations of the band/column rules (read config) ----
@@ -113,4 +130,108 @@ def compute_flow2(pilot_conn: sqlite3.Connection, lines: list[dict]) -> dict:
         "findings": findings,
         "recoverable_total_cents": recoverable_total,
         "leverage_top_multiple": max(multiples) if multiples else None,
+    }
+
+
+# --- §5 routing (independent of app.router) ---------------------------------
+@lru_cache
+def _routing_map() -> dict:
+    doc = yaml.safe_load((CONFIG_DIR / "carc_rarc_plain_english.yaml").read_text(encoding="utf-8"))
+    return {(e["code"], e["code_type"]): e["suggested_action"] for e in doc["codes"]}
+
+
+def route_action(code: str, code_type: str, *, insurance_situation: str | None = None,
+                 problem_type: str | None = None, member_billed: bool = False) -> tuple[str, str]:
+    """(effective_action, target_flow) for a denial code, with the locked overrides."""
+    base = _routing_map().get((code, code_type))
+    if base is None:
+        return "explain_only", "flow1_explain"         # long tail
+    action = base
+    if code == "45" and code_type == "CARC" and (
+        insurance_situation == "self_pay" or problem_type == "balance_bill"
+    ):
+        action = "error_check"
+    elif code == "29" and code_type == "CARC" and member_billed:
+        action = "escalate_human"
+    return action, _ACTION_TO_FLOW[action]
+
+
+# --- Flow 1 — explanation & reconciliation ----------------------------------
+def _reconcile_category(bill: dict) -> str | None:
+    b, a = bill.get("total_billed_cents"), bill.get("total_allowed_cents")
+    p, r = bill.get("total_plan_paid_cents"), bill.get("patient_responsibility_cents")
+    if b and r == b and (p or 0) == 0 and (a or 0) == 0:
+        return "denied_claim"
+    if a is not None and p is not None and r is not None:
+        return "consistent" if p + r == a else "inconsistent"
+    return None
+
+
+def _classify_line(pilot_conn: sqlite3.Connection, raw_code: str) -> dict:
+    from app.codes import detect_code_type
+    info = pilot.lookup_code(pilot_conn, raw_code)
+    if info and info["code_type"] not in ("CARC", "RARC"):
+        desc = info["short_description"] or info["official_text"] or "(no description on file)"
+        return {"code": raw_code, "kind": "described", "description": desc}
+    if detect_code_type(raw_code) == "CPT":
+        return {"code": raw_code, "kind": "cpt_fallback", "description": None}
+    return {"code": raw_code, "kind": "unrecognized", "description": None}
+
+
+def compute_flow1(pilot_conn: sqlite3.Connection, bill: dict, lines: list[dict],
+                  denials: list[dict], insurance_situation: str | None) -> dict:
+    member_billed = bool((bill.get("patient_responsibility_cents") or 0) > 0)
+    appealable = any(
+        route_action(d["code"], d["code_type"], insurance_situation=insurance_situation,
+                     problem_type="explain", member_billed=member_billed)[0] == "appeal"
+        for d in denials
+    )
+    return {
+        "number_cents": bill.get("patient_responsibility_cents"),
+        "reconciliation": _reconcile_category(bill),
+        "appealable": appealable,
+        "lines": [_classify_line(pilot_conn, ln["raw_code"]) for ln in lines],
+        "denials_shown": sorted(f"{d['code_type']} {d['code']}" for d in denials),
+    }
+
+
+# --- Flow 3 — ground ambulance appeal ---------------------------------------
+def _appeal_level_ref(pilot_conn, framework: str, plan_key: str) -> str | None:
+    if framework == "medicare":
+        levels = pilot.medicare_appeal_levels(pilot_conn, plan_key)
+        return levels[0]["level_name"] if levels else None
+    import json as _json
+    for lv in pilot.commercial_appeal_levels(pilot_conn):
+        try:
+            applicable = _json.loads(lv.get("applicable_plan_types") or "[]")
+        except (ValueError, TypeError):
+            applicable = []
+        if plan_key in applicable:
+            return lv["level_name"]
+    levels = pilot.commercial_appeal_levels(pilot_conn)
+    return levels[0]["level_name"] if levels else None
+
+
+def compute_flow3(pilot_conn: sqlite3.Connection, transport_hcpcs: str, state: str,
+                  loaded_miles: float | None, insurance_situation: str) -> dict:
+    segment, ncd_weight, framework, plan_key = _SEGMENT.get(
+        insurance_situation, _SEGMENT["commercial_aca"]
+    )
+    base = pilot.ambulance_base_rate(pilot_conn, transport_hcpcs.upper(), state)
+    per_mile = pilot.ambulance_mileage_rate(pilot_conn, state)
+    reasonable, floor = None, 0
+    if base is not None:
+        if loaded_miles and per_mile:
+            reasonable = base + round(per_mile * loaded_miles)
+        else:
+            reasonable, floor = base, 1
+    return {
+        "kind": "appeal",
+        "segment": segment,
+        "ncd_weight": ncd_weight,
+        "base_rate_cents": base,
+        "per_mile_rate_cents": per_mile,
+        "reasonable_amount_cents": reasonable,
+        "anchor_is_floor": floor,
+        "appeal_level_ref": _appeal_level_ref(pilot_conn, framework, plan_key),
     }

@@ -1,0 +1,78 @@
+[
+  {
+    "category": "air_handoff",
+    "expected": {
+      "kind": "air",
+      "routed_to_handoff": true
+    },
+    "fixture_id": "flow3_air_001",
+    "flow": 3,
+    "input": {
+      "transport_hcpcs": "A0430"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0430"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "air_handoff",
+    "expected": {
+      "kind": "air",
+      "routed_to_handoff": true
+    },
+    "fixture_id": "flow3_air_002",
+    "flow": 3,
+    "input": {
+      "transport_hcpcs": "A0431"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0431"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "air_handoff",
+    "expected": {
+      "kind": "air",
+      "routed_to_handoff": true
+    },
+    "fixture_id": "flow3_air_003",
+    "flow": 3,
+    "input": {
+      "transport_hcpcs": "A0435"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0435"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "air_handoff",
+    "expected": {
+      "kind": "air",
+      "routed_to_handoff": true
+    },
+    "fixture_id": "flow3_air_004",
+    "flow": 3,
+    "input": {
+      "transport_hcpcs": "A0436"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0436"
+      ],
+      "source_table": "codes"
+    }
+  }
+]

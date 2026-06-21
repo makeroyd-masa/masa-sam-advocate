@@ -1,4 +1,4 @@
-# SAM demo pack — Flow 2 (manual entry)
+# SAM demo pack — manual entry (Flows 1-3)
 
 Demo — Unbundling (NCCI PTP), never-allowed pair
 Enter in SAM: 00170 ×1 @ $120.00; 96375 ×1 @ $60.00
@@ -14,3 +14,8 @@ Demo — Price benchmark (PFS), strong leverage
 Enter in SAM: 52001 ×1 @ $2,476.44 POS 11
 Expected: recoverable $0.00, top multiple ≈6.0×
 Source: pfs_5x_plus_001 (see MANIFEST.json)
+
+Demo — Ground ambulance appeal (base + mileage anchor)
+Enter in SAM: transport A0434, 12 loaded miles, state NC, denial CARC 50
+Expected: Medicare reasonable amount $986.71 (base $876.91 + mileage); appeal pathway Redetermination
+Source: flow3_anchor_mileage_001 (see MANIFEST.json)

@@ -1,0 +1,188 @@
+[
+  {
+    "category": "waterfall_broken",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 20000,
+      "reconciliation": "inconsistent"
+    },
+    "fixture_id": "flow1_waterfall_bad_001",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 20000,
+        "total_allowed_cents": 50000,
+        "total_billed_cents": 100000,
+        "total_plan_paid_cents": 41000
+      },
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "waterfall_broken",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 20000,
+      "reconciliation": "inconsistent"
+    },
+    "fixture_id": "flow1_waterfall_bad_002",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 20000,
+        "total_allowed_cents": 54000,
+        "total_billed_cents": 104000,
+        "total_plan_paid_cents": 45000
+      },
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "waterfall_broken",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 20000,
+      "reconciliation": "inconsistent"
+    },
+    "fixture_id": "flow1_waterfall_bad_003",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 20000,
+        "total_allowed_cents": 58000,
+        "total_billed_cents": 108000,
+        "total_plan_paid_cents": 49000
+      },
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "waterfall_broken",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 20000,
+      "reconciliation": "inconsistent"
+    },
+    "fixture_id": "flow1_waterfall_bad_004",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 20000,
+        "total_allowed_cents": 62000,
+        "total_billed_cents": 112000,
+        "total_plan_paid_cents": 53000
+      },
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "waterfall_broken",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 20000,
+      "reconciliation": "inconsistent"
+    },
+    "fixture_id": "flow1_waterfall_bad_005",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 20000,
+        "total_allowed_cents": 66000,
+        "total_billed_cents": 116000,
+        "total_plan_paid_cents": 57000
+      },
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "waterfall_broken",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 20000,
+      "reconciliation": "inconsistent"
+    },
+    "fixture_id": "flow1_waterfall_bad_006",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "patient_responsibility_cents": 20000,
+        "total_allowed_cents": 70000,
+        "total_billed_cents": 120000,
+        "total_plan_paid_cents": 61000
+      },
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  }
+]

@@ -44,6 +44,19 @@ def facility_finding(code: str) -> dict:
     return {"type": "facility_unbenchmarked", "code": code}
 
 
+def recon_category(note_text: str | None) -> str | None:
+    """Classify a Flow 1 reconciliation note into a stable enum (shared by the
+    runner and reference_calc so both speak the same language)."""
+    t = (note_text or "").lower()
+    if "denied claim" in t:
+        return "denied_claim"
+    if "internally consistent" in t:
+        return "consistent"
+    if "doesn't match" in t or "does not match" in t:
+        return "inconsistent"
+    return None
+
+
 def sort_findings(findings: list[dict]) -> list[dict]:
     """Deterministic ordering for comparison: by type, then the implicated code(s)."""
     return sorted(

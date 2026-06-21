@@ -1,0 +1,289 @@
+[
+  {
+    "category": "code_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "A0021",
+          "description": "Outside state ambulance serv",
+          "kind": "described"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_lookup_hcpcs_001",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "A0021",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "HCPCS:A0021"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "code_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "A00",
+          "description": "Cholera",
+          "kind": "described"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_lookup_icd10cm_002",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "A00",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "ICD10CM:A00"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "code_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "0016070",
+          "description": "Bypass Cerebral Ventricle",
+          "kind": "described"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_lookup_icd10pcs_003",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "0016070",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "ICD10PCS:0016070"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "code_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "0001",
+          "description": "Claim total",
+          "kind": "described"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_lookup_revenuecode_004",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "0001",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "RevenueCode:0001"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "code_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "001",
+          "description": "Heart Transplant or Implant of Heart Assist System with MCC",
+          "kind": "described"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_lookup_msdrg_005",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "001",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "MSDRG:001"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "code_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "0002-0152",
+          "description": "Zepbound",
+          "kind": "described"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_lookup_ndc_006",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "0002-0152",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "NDC:0002-0152"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "code_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "01",
+          "description": "Pharmacy",
+          "kind": "described"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_lookup_pos_008",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "01",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "POS:01"
+      ],
+      "source_table": "codes"
+    }
+  }
+]

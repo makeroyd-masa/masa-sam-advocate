@@ -1,0 +1,125 @@
+[
+  {
+    "category": "cpt_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "10004",
+          "description": null,
+          "kind": "cpt_fallback"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_cpt_001",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "10004",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "10004"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  },
+  {
+    "category": "cpt_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "10005",
+          "description": null,
+          "kind": "cpt_fallback"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_cpt_002",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "10005",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "10005"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  },
+  {
+    "category": "cpt_lookup",
+    "expected": {
+      "appealable": false,
+      "denials_shown": [],
+      "lines": [
+        {
+          "code": "10006",
+          "description": null,
+          "kind": "cpt_fallback"
+        }
+      ],
+      "number_cents": null,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_cpt_003",
+    "flow": 1,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": null,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "10006",
+          "units": 1
+        }
+      ],
+      "bill_summary": {},
+      "denial_codes": [],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "10006"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  }
+]

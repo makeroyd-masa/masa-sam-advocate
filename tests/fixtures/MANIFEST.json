@@ -1,5 +1,12 @@
 {
   "fixture_counts": {
+    "air_handoff": 4,
+    "ambulance_base_only": 8,
+    "ambulance_base_plus_mileage": 12,
+    "carc_rarc_lookup": 6,
+    "code_lookup": 7,
+    "cpt_lookup": 3,
+    "denial_routing": 6,
     "mue_at_cap": 10,
     "mue_cap_plus_1": 10,
     "mue_over_cap": 10,
@@ -9,15 +16,25 @@
     "pfs_cpt_numbered": 5,
     "pfs_pos_flip": 6,
     "pfs_sub_2x": 10,
+    "segment_weighting": 10,
     "unbundling_indicator_0": 15,
     "unbundling_indicator_1_no_modifier": 10,
     "unbundling_indicator_1_valid_modifier": 10,
     "unbundling_indicator_9": 5,
-    "unbundling_pair_absent": 10
+    "unbundling_pair_absent": 10,
+    "waterfall_broken": 6,
+    "waterfall_consistent": 8
   },
   "generator_version": "0.2.0",
   "seed": 1337,
   "sources": {
+    "ambulance_fee_schedule": [
+      {
+        "file_hash": "6591edfddccce0dd21eaef235c671c6a1d15cb7d60dcb211b3fcd96e7d599dba",
+        "row_count": 520,
+        "source_id": "c01_ambulance_fee_schedule"
+      }
+    ],
     "codes": [
       {
         "file_hash": "4f6c65f0034736d2b02fa9eb1128aab564fa673dd4d99363f8b2167af3994816",
@@ -75,6 +92,20 @@
         "source_id": "a11_ndc"
       }
     ],
+    "commercial_appeal_levels": [
+      {
+        "file_hash": "manual",
+        "row_count": 4,
+        "source_id": "e04_aca_appeals"
+      }
+    ],
+    "medicare_appeal_levels": [
+      {
+        "file_hash": "manual",
+        "row_count": 6,
+        "source_id": "e03_medicare_appeals"
+      }
+    ],
     "ncci_mue": [
       {
         "file_hash": "manual",
@@ -87,6 +118,13 @@
         "file_hash": "manual",
         "row_count": 2633389,
         "source_id": "c06_ncci_ptp"
+      }
+    ],
+    "ncd_ambulance": [
+      {
+        "file_hash": "8c41918ecd68ab1a8cf978d2604f9087703d589a28871734d615ca6fbee6afc9",
+        "row_count": 40,
+        "source_id": "e02_ncd_ambulance"
       }
     ],
     "physician_fee_schedule": [
