@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from .. import answer_card, repo
 from ..db import get_app_db, get_pilot_db
 from ..flows import flow1, flow2, flow3
+from ..schemas import HandoffReq
 
 api = APIRouter(prefix="/api/cases", tags=["flows"])
 
@@ -55,3 +56,15 @@ def flow3_appeal(case_id: int, app_db: sqlite3.Connection = Depends(get_app_db),
     repo.log_event(app_db, case_id, "card_rendered", to_stage="output",
                    detail={"flow": "flow3_appeal", "card_id": card_id})
     return {"card_id": card_id, "card": card.to_dict()}
+
+
+@api.post("/{case_id}/handoff")
+def request_handoff(case_id: int, body: HandoffReq,
+                    app_db: sqlite3.Connection = Depends(get_app_db)):
+    """Member-initiated escalation to an in-house human advocate (PRD §7.7)."""
+    _case_or_404(app_db, case_id)
+    reason = body.reason or "Member requested a human advocate."
+    handoff_id = repo.create_handoff(app_db, case_id, reason=reason)
+    repo.update_case(app_db, case_id, status="handed_off")
+    repo.log_event(app_db, case_id, "handoff_requested", detail={"reason": reason})
+    return {"handoff_id": handoff_id, "status": "handed_off"}

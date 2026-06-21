@@ -81,6 +81,10 @@ class Stage4Req(BaseModel):
     state: str | None = None             # 2-letter; for the dollar anchor (Flow 3)
 
 
+class HandoffReq(BaseModel):
+    reason: str | None = None
+
+
 class StageResult(BaseModel):
     case: CaseState
     next_stage: str

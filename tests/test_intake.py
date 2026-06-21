@@ -140,3 +140,10 @@ def test_resume_returns_state(client):
 
 def test_missing_case_404(client):
     assert client.get("/api/cases/99999").status_code == 404
+
+
+def test_member_initiated_handoff(client):
+    cid = _create(client)["case"]["case_id"]
+    r = client.post(f"/api/cases/{cid}/handoff", json={"reason": "wants help"}).json()
+    assert r["status"] == "handed_off"
+    assert client.get(f"/api/cases/{cid}").json()["case"]["status"] == "handed_off"
