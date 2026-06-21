@@ -11,8 +11,10 @@ from fastapi import FastAPI
 from . import __version__
 from .config import feature_flags, get_settings
 from .db import connect_app, connect_pilot
+from .routers.intake import api as intake_api
 
 app = FastAPI(title="SAM Medical Bill Advocate", version=__version__)
+app.include_router(intake_api)
 
 
 @app.get("/health")
