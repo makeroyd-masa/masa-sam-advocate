@@ -6,6 +6,7 @@ a fixture must be re-derived (Flow 2 reads pilot.db for benchmarks via the engin
 """
 
 import json
+import os
 import sqlite3
 import sys
 from pathlib import Path
@@ -20,8 +21,19 @@ sys.path.insert(0, str(FIX))
 import canonical  # noqa: E402
 
 SCHEMA = REPO_ROOT / "docs" / "app_schema_v0_1.sql"
-PILOT = REPO_ROOT / "data" / "pilot.db"
 DATA = FIX / "data"
+
+# Resolve the reference DB: explicit override > real pilot.db > committed slim
+# ci_pilot.db. The slim DB lets CI run the engine against the fixtures with no
+# 1 GB dependency; locally the real pilot.db is used when present.
+_REAL_PILOT = REPO_ROOT / "data" / "pilot.db"
+_CI_PILOT = FIX / "ci_pilot.db"
+if os.environ.get("SAM_PILOT_DB"):
+    PILOT = Path(os.environ["SAM_PILOT_DB"])
+elif _REAL_PILOT.exists():
+    PILOT = _REAL_PILOT
+else:
+    PILOT = _CI_PILOT
 
 
 def _load_all() -> list[dict]:

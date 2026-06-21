@@ -356,6 +356,74 @@ def build_flow3(conn, rng) -> dict[str, list[dict]]:
     return out
 
 
+CI_DB_TABLES = ["codes", "ncci_ptp_edits", "ncci_mue", "physician_fee_schedule",
+                "ambulance_fee_schedule", "ncd_ambulance", "medicare_appeal_levels",
+                "commercial_appeal_levels"]
+
+
+def build_ci_db(conn, categories, path) -> int:
+    """Emit a tiny stand-in pilot.db containing only the rows these fixtures touch,
+    so CI runs the engine against the fixtures with no 1 GB dependency (spec §2)."""
+    flow2_codes, flow1_codes, amb_hcpcs, amb_states = set(), set(), set(), set()
+    for fixtures in categories.values():
+        for fx in fixtures:
+            inp = fx["input"]
+            if fx["flow"] == 2:
+                flow2_codes.update(ln["raw_code"] for ln in inp["bill_lines"])
+            elif fx["flow"] == 1:
+                flow1_codes.update(ln["raw_code"] for ln in inp.get("bill_lines", []))
+                flow1_codes.update(d["code"] for d in inp.get("denial_codes", []))
+            elif fx["flow"] == 3:
+                if "ambulance_claim" in inp:
+                    amb_hcpcs.add(inp["ambulance_claim"]["transport_hcpcs"])
+                    amb_states.add(inp["state"])
+                if "code" in inp:                       # routing fixtures
+                    flow1_codes.add(inp["code"])
+    amb_hcpcs.add("A0425")
+    # codes table must also satisfy load_code_explanations (all 80 routing codes)
+    code_set = flow1_codes | {c for (c, _ct) in reference_calc._routing_map()}
+
+    if path.exists():
+        path.unlink()
+    ci = sqlite3.connect(path)
+    for t in CI_DB_TABLES:
+        ci.execute(conn.execute(
+            "SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (t,)).fetchone()[0])
+
+    def copy(table, where, params=()):
+        rows = conn.execute(f"SELECT * FROM {table} {where}", params).fetchall()
+        if not rows:
+            return
+        cols = rows[0].keys()
+        ci.executemany(
+            f"INSERT INTO {table} ({','.join(cols)}) VALUES ({','.join('?' * len(cols))})",
+            [tuple(r) for r in rows])
+
+    def inlist(items):
+        items = tuple(sorted(items))
+        return ",".join("?" * len(items)), items
+
+    if code_set:
+        ph, vals = inlist(code_set)
+        copy("codes", f"WHERE code IN ({ph}) ORDER BY id", vals)
+    if flow2_codes:
+        ph, vals = inlist(flow2_codes)
+        copy("ncci_ptp_edits", f"WHERE column_one_code IN ({ph}) AND column_two_code IN ({ph})",
+             vals + vals)
+        copy("ncci_mue", f"WHERE hcpcs_code IN ({ph})", vals)
+        copy("physician_fee_schedule", f"WHERE hcpcs IN ({ph})", vals)
+    if amb_hcpcs and amb_states:
+        hph, hv = inlist(amb_hcpcs)
+        sph, sv = inlist(amb_states)
+        copy("ambulance_fee_schedule", f"WHERE hcpcs IN ({hph}) AND geo_key IN ({sph})", hv + sv)
+    for t in ("ncd_ambulance", "medicare_appeal_levels", "commercial_appeal_levels"):
+        copy(t, "")
+    ci.commit()
+    n = sum(ci.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in CI_DB_TABLES)
+    ci.close()
+    return n
+
+
 def build_manifest(conn, seed, counts) -> dict:
     sources = {}
     for t in TOUCHED_TABLES:
@@ -440,12 +508,14 @@ def main() -> int:
         counts[cat] = len(fixtures)
 
     write_json(HERE / "MANIFEST.json", build_manifest(conn, args.seed, counts))
+    ci_rows = build_ci_db(conn, categories, HERE / "ci_pilot.db")
     if args.demo:
         write_demo(categories)
 
     total = sum(counts.values())
     conn.close()
     print(f"Wrote {total} fixtures across {len(counts)} categories -> {DATA_DIR}")
+    print(f"Wrote ci_pilot.db ({ci_rows} rows) for dependency-free CI")
     for cat in sorted(counts):
         print(f"  {cat}: {counts[cat]}")
     return 0

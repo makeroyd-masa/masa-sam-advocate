@@ -15,6 +15,8 @@ app.db
 *.db-shm
 *.db-wal
 *.db-journal
+# ...but the tiny committed slim DB for dependency-free CI is an exception
+!tests/fixtures/ci_pilot.db
 
 # Env / secrets
 .env
