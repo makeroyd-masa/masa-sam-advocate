@@ -8,8 +8,13 @@ set -e
 export PILOT_DB_PATH APP_DB_PATH
 
 if [ ! -f "$PILOT_DB_PATH" ]; then
-  echo "WARNING: pilot.db not found at $PILOT_DB_PATH."
-  echo "         Upload it to the mounted volume; /health will read 'degraded' until then."
+  if [ -n "$PILOT_DB_URL" ]; then
+    echo "pilot.db missing — fetching from PILOT_DB_URL (first boot)..."
+    python scripts/fetch_pilot_db.py || echo "pilot.db fetch failed; /health will read degraded"
+  else
+    echo "WARNING: pilot.db not found at $PILOT_DB_PATH and PILOT_DB_URL unset."
+    echo "         Mount a volume + set PILOT_DB_URL; /health will read 'degraded' until then."
+  fi
 fi
 
 # Idempotent: creates app.db + dev member if absent; loads code_explanations
