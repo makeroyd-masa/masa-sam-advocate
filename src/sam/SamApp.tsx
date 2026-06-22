@@ -15,10 +15,10 @@ type Step =
 
 const SEED_NOTE = "I see that you have an open Air ambulance claim (#1234). Do you want to check the status of that?";
 
-// The launcher capability pick IS the intent, so there's no separate intent step.
-// explain ends at the answer card after the bill screen (2 steps); error/appeal
-// add a line-item / ambulance step (3 steps).
-const totalSteps = (pt: ProblemType) => (pt === "explain" ? 2 : 3);
+// Every flow is now two input screens: insurance, then the screen that matters
+// (bill for explain, lines for error, ambulance for appeal). The launcher pick is
+// the intent; flows 2 & 3 skip the bill-level screen.
+const totalSteps = (_pt: ProblemType) => 2;
 
 export function SamApp() {
   const [step, setStep] = useState<Step>("closed");
@@ -58,7 +58,11 @@ export function SamApp() {
   const continue1 = (ins: InsuranceSituation, plan?: string) => run(async () => {
     const r = await api.stage1(caseId!, ins, plan);
     if (r.routed_to_handoff) { showInfo("Routed to a human advocate", r.message ?? ""); return; }
-    setStep("stage2");
+    if (intent === "explain") { setStep("stage2"); return; }
+    // Flows 2 & 3 skip the bill-level screen — advance the state machine straight
+    // to the line-item (Flow 2) / ambulance (Flow 3) capture.
+    const r2 = await api.stage2(caseId!, {});
+    setStep(r2.next_stage === "stage4_ambulance" ? "stage4" : "stage3");
   });
 
   const continue2 = (payload: Record<string, unknown>) => run(async () => {
@@ -123,10 +127,9 @@ export function SamApp() {
         <Stage1 onContinue={continue1} onClose={reset} busy={busy} total={totalSteps(intent)} />
       )}
       {step === "stage2" && (
+        // Only reached by the explain flow now (2 & 3 skip the bill screen).
         <Stage2 onContinue={continue2} onClose={reset} busy={busy} total={totalSteps(intent)}
-          ctaLabel={intent === "explain" ? "Explain my bill"
-            : intent === "denial_appeal" ? "Next: your ambulance claim"
-            : "Next: add your bill lines"} />
+          ctaLabel="Explain my bill" />
       )}
       {step === "stage3" && <Stage3 onCheck={check3} onNoBill={() => setStep("stage3alt")} onClose={reset} busy={busy} />}
       {step === "stage3alt" && (

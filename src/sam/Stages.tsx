@@ -149,7 +149,7 @@ export function Stage3({ onCheck, onNoBill, onClose, busy }:
     encounter_pos: l.pos.split(/\s|·/)[0] || null,
   })));
   return (
-    <Sheet subtitle="Step 3 of 3 · one line at a time — partial is fine" tall onClose={onClose}
+    <Sheet subtitle="Step 2 of 2 · one line at a time — partial is fine" tall onClose={onClose}
       title="Add your bill lines"
       foot={<button className="pill purple" disabled={busy} onClick={submit}>Check for errors & overcharges</button>}>
       {lines.map((l, i) => {
@@ -214,7 +214,7 @@ export function Stage4({ onReview, onClose, busy, error }:
     state: f.state || null,
   });
   return (
-    <Sheet subtitle="Step 3 of 3 · for the appeal & dollar estimate" tall onClose={onClose}
+    <Sheet subtitle="Step 2 of 2 · for the appeal & dollar estimate" tall onClose={onClose}
       title="Your ambulance claim"
       foot={<button className="pill purple" disabled={busy} onClick={submit}>Review my appeal</button>}>
       {error && <div className="sam-error">{error}</div>}
