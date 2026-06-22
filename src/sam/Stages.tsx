@@ -32,11 +32,14 @@ const INTENTS: { pt: ProblemType; icon: JSX.Element; h: string; p: string }[] = 
 export function Launcher({ seedNote, onPick, onClose }:
   { seedNote?: string; onPick: (pt: ProblemType) => void; onClose: () => void }) {
   return (
-    <Sheet subtitle="Your medical bill advocate" onClose={onClose}>
+    <Sheet subtitle="Your family's AI health advocate" onClose={onClose}>
       {seedNote && (
-        <div className="launch-ctx">
-          <div className="e">From your claim</div>
-          <div className="m">{seedNote}</div>
+        <div className="launch-ctx launch-ctx-row">
+          <div className="tx">
+            <div className="e">Need something related to claims?</div>
+            <div className="m">{seedNote}</div>
+          </div>
+          <span className="chev" aria-hidden="true">›</span>
         </div>
       )}
       {INTENTS.map((it) => (
@@ -48,38 +51,21 @@ export function Launcher({ seedNote, onPick, onClose }:
       ))}
       <button className="cap-act" disabled>
         <span className="ic"><GridIcon /></span>
-        <div className="tx"><h5>Check if you're covered</h5><p>Coverage questions</p></div>
+        <div className="tx"><h5>Start a new claim</h5>
+          <p>File a medical-transport or out-of-pocket claim from your plan</p></div>
         <span className="soon">Soon</span>
       </button>
       <button className="cap-act" disabled>
         <span className="ic"><UserIcon /></span>
-        <div className="tx"><h5>Talk to a human advocate</h5><p>Hand off your case</p></div>
+        <div className="tx"><h5>Coordinate non-emergency medical transport</h5>
+          <p>Arrange a covered ride to a medical appointment</p></div>
         <span className="soon">Soon</span>
       </button>
     </Sheet>
   );
 }
 
-// --- Frame 3: Stage 0 intent ----------------------------------------------
-export function Stage0({ initial, onContinue, onClose, busy }:
-  { initial?: ProblemType; onContinue: (pt: ProblemType) => void; onClose: () => void; busy: boolean }) {
-  const [sel, setSel] = useState<ProblemType>(initial ?? "explain");
-  return (
-    <Sheet subtitle={`Step 1 of ${sel === "explain" ? 3 : 4}`} onClose={onClose}
-      foot={<button className="pill purple" disabled={busy} onClick={() => onContinue(sel)}>Continue</button>}>
-      <div className="sam-msg">Hi — I'll help you sort out this bill. <b>What would you like to do first?</b></div>
-      {INTENTS.map((it) => (
-        <button className={`choice ${sel === it.pt ? "sel" : ""}`} key={it.pt} onClick={() => setSel(it.pt)}>
-          <span className="ic">{it.icon}</span>
-          <div className="tx"><h5>{it.h}</h5><p>{it.p}</p></div>
-          <span className="radio" />
-        </button>
-      ))}
-    </Sheet>
-  );
-}
-
-// --- Frame 4: Stage 1 insurance -------------------------------------------
+// --- Stage 1 insurance ------------------------------------------------------
 const SITUATIONS: { v: InsuranceSituation; label: string }[] = [
   { v: "medicare_ffs", label: "Medicare" },
   { v: "medicare_advantage", label: "Medicare Advantage" },
@@ -94,7 +80,7 @@ export function Stage1({ onContinue, onClose, busy, total }:
   const [sel, setSel] = useState<InsuranceSituation>("medicare_ffs");
   const [plan, setPlan] = useState("");
   return (
-    <Sheet subtitle={`Step 2 of ${total}`} onClose={onClose}
+    <Sheet subtitle={`Step 1 of ${total}`} onClose={onClose}
       foot={<button className="pill purple" disabled={busy} onClick={() => onContinue(sel, plan || undefined)}>Continue</button>}>
       <p className="q">How are you covered for this bill?</p>
       <div className="opt-grid">
@@ -127,7 +113,7 @@ export function Stage2({ onContinue, onClose, busy, ctaLabel, total }:
     denial_codes: f.denial ? [f.denial] : [],
   });
   return (
-    <Sheet subtitle={`Step 3 of ${total}`} onClose={onClose}
+    <Sheet subtitle={`Step 2 of ${total}`} onClose={onClose}
       foot={<button className="pill purple" disabled={busy} onClick={submit}>{ctaLabel}</button>}>
       <p className="q">Tell me about the bill</p>
       <div className="fld"><label>Provider</label>
@@ -163,7 +149,7 @@ export function Stage3({ onCheck, onNoBill, onClose, busy }:
     encounter_pos: l.pos.split(/\s|·/)[0] || null,
   })));
   return (
-    <Sheet subtitle="Step 4 of 4 · one line at a time — partial is fine" tall onClose={onClose}
+    <Sheet subtitle="Step 3 of 3 · one line at a time — partial is fine" tall onClose={onClose}
       title="Add your bill lines"
       foot={<button className="pill purple" disabled={busy} onClick={submit}>Check for errors & overcharges</button>}>
       {lines.map((l, i) => {
@@ -228,7 +214,7 @@ export function Stage4({ onReview, onClose, busy, error }:
     state: f.state || null,
   });
   return (
-    <Sheet subtitle="Step 4 of 4 · for the appeal & dollar estimate" tall onClose={onClose}
+    <Sheet subtitle="Step 3 of 3 · for the appeal & dollar estimate" tall onClose={onClose}
       title="Your ambulance claim"
       foot={<button className="pill purple" disabled={busy} onClick={submit}>Review my appeal</button>}>
       {error && <div className="sam-error">{error}</div>}

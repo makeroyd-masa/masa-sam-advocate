@@ -4,20 +4,21 @@ import { AnswerCardView } from "./AnswerCardView";
 import { Sheet } from "./Sheet";
 import { SparkIcon, UserIcon } from "./icons";
 import {
-  Launcher, Stage0, Stage1, Stage2, Stage3, Stage3Alt, Stage4,
+  Launcher, Stage1, Stage2, Stage3, Stage3Alt, Stage4,
 } from "./Stages";
 import { api } from "./api";
 import type { AnswerCard, BillLineIn, InsuranceSituation, ProblemType } from "./types";
 
 type Step =
-  | "closed" | "launcher" | "stage0" | "stage1" | "stage2"
+  | "closed" | "launcher" | "stage1" | "stage2"
   | "stage3" | "stage3alt" | "stage4" | "card" | "info";
 
-const SEED_NOTE = "Want me to look at this ambulance claim? I can explain it, check it for errors, or help you appeal a denial.";
+const SEED_NOTE = "I see that you have an open Air ambulance claim (#1234). Do you want to check the status of that?";
 
-// explain ends at the answer card after Stage 2 (3 steps); error/appeal have a
-// 4th step (line-item / ambulance capture).
-const totalSteps = (pt: ProblemType) => (pt === "explain" ? 3 : 4);
+// The launcher capability pick IS the intent, so there's no separate intent step.
+// explain ends at the answer card after the bill screen (2 steps); error/appeal
+// add a line-item / ambulance step (3 steps).
+const totalSteps = (pt: ProblemType) => (pt === "explain" ? 2 : 3);
 
 export function SamApp() {
   const [step, setStep] = useState<Step>("closed");
@@ -46,10 +47,12 @@ export function SamApp() {
     setStep("launcher");
   });
 
-  const pickIntent = (pt: ProblemType) => { setIntent(pt); setStep("stage0"); };
-
-  const continue0 = (pt: ProblemType) => run(async () => {
-    await api.stage0(caseId!, pt); setIntent(pt); setStep("stage1");
+  // The launcher capability is the intent — persist it and go straight to Stage 1
+  // (no separate intent screen).
+  const pickIntent = (pt: ProblemType) => run(async () => {
+    await api.stage0(caseId!, pt);
+    setIntent(pt);
+    setStep("stage1");
   });
 
   const continue1 = (ins: InsuranceSituation, plan?: string) => run(async () => {
@@ -116,7 +119,6 @@ export function SamApp() {
       <HostClaims onOpen={openSam} />
 
       {step === "launcher" && <Launcher seedNote={SEED_NOTE} onPick={pickIntent} onClose={reset} />}
-      {step === "stage0" && <Stage0 initial={intent} onContinue={continue0} onClose={reset} busy={busy} />}
       {step === "stage1" && (
         <Stage1 onContinue={continue1} onClose={reset} busy={busy} total={totalSteps(intent)} />
       )}

@@ -119,6 +119,9 @@ body { margin: 0; background: #e9e8ee; }
 
 /* capability launcher */
 .launch-ctx { background: var(--horizon-10); border-radius: 14px; padding: 13px 15px; margin-bottom: 16px; }
+.launch-ctx-row { display: flex; align-items: center; gap: 10px; }
+.launch-ctx-row .tx { flex: 1; }
+.launch-ctx-row .chev { color: var(--masa-harbor); font-size: 22px; font-weight: 700; line-height: 1; flex: 0 0 auto; }
 .launch-ctx .e { font-size: 10.5px; font-weight: 700; color: var(--masa-horizon); letter-spacing: 0.3px; text-transform: uppercase; }
 .launch-ctx .m { font-size: 13.5px; color: #36304a; margin-top: 5px; line-height: 1.45; }
 .cap-act { display: flex; align-items: center; gap: 12px; padding: 13px 4px; border-bottom: 1px solid var(--line);
