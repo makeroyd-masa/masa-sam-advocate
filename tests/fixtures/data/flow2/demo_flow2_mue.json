@@ -1,15 +1,19 @@
 [
   {
     "category": "demo_flow2_mue",
+    "demo_meta": {
+      "provider": "Summit Diagnostic Lab",
+      "title": "Lipid panel billed 3\u00d7 (daily max 1)"
+    },
     "expected": {
       "findings": [
         {
-          "code": "80053",
+          "code": "80061",
           "type": "facility_unbenchmarked"
         },
         {
           "cap": 1,
-          "code": "80053",
+          "code": "80061",
           "recoverable_cents": 8000,
           "type": "quantity_mue",
           "units_over": 2
@@ -27,7 +31,7 @@
           "encounter_pos": null,
           "line_no": 1,
           "modifier": null,
-          "raw_code": "80053",
+          "raw_code": "80061",
           "units": 3
         }
       ],
@@ -37,7 +41,101 @@
     "provenance": {
       "pilot_db_version": "see MANIFEST.json",
       "source_rows": [
-        "80053"
+        "80061"
+      ],
+      "source_table": "ncci_mue"
+    }
+  },
+  {
+    "category": "demo_flow2_mue",
+    "demo_meta": {
+      "provider": "Bayview Labs",
+      "title": "CBC billed 4\u00d7 (daily max 2)"
+    },
+    "expected": {
+      "findings": [
+        {
+          "code": "85025",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 2,
+          "code": "85025",
+          "recoverable_cents": 6000,
+          "type": "quantity_mue",
+          "units_over": 2
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 6000
+    },
+    "fixture_id": "demo_flow2_mue_002",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 12000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "85025",
+          "units": 4
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "85025"
+      ],
+      "source_table": "ncci_mue"
+    }
+  },
+  {
+    "category": "demo_flow2_mue",
+    "demo_meta": {
+      "provider": "Northgate Urgent Care",
+      "title": "Blood draw billed 5\u00d7 (daily max 2)"
+    },
+    "expected": {
+      "findings": [
+        {
+          "code": "36415",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "cap": 2,
+          "code": "36415",
+          "recoverable_cents": 4200,
+          "type": "quantity_mue",
+          "units_over": 3
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 4200
+    },
+    "fixture_id": "demo_flow2_mue_003",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 7000,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "36415",
+          "units": 5
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "36415"
       ],
       "source_table": "ncci_mue"
     }

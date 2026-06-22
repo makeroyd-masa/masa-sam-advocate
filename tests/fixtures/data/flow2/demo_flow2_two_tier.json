@@ -1,6 +1,10 @@
 [
   {
     "category": "demo_flow2_two_tier",
+    "demo_meta": {
+      "provider": "Riverside Medical Center",
+      "title": "Unbundled labs + a ~6\u00d7 office visit"
+    },
     "expected": {
       "findings": [
         {
@@ -12,9 +16,9 @@
           "type": "facility_unbenchmarked"
         },
         {
-          "benchmark_cents": 12699,
+          "benchmark_cents": 17807,
           "billed_multiple": 6.0,
-          "code": "99214",
+          "code": "99215",
           "setting": "non_facility",
           "tier": "strong_leverage",
           "type": "price_benchmark"
@@ -23,19 +27,19 @@
           "disallowed_code": "80048",
           "indicator": 0,
           "other_code": "80053",
-          "recoverable_cents": 9500,
+          "recoverable_cents": 9200,
           "type": "unbundling_ptp"
         }
       ],
       "leverage_top_multiple": 6.0,
-      "recoverable_total_cents": 9500
+      "recoverable_total_cents": 9200
     },
     "fixture_id": "demo_flow2_two_tier_001",
     "flow": 2,
     "input": {
       "bill_lines": [
         {
-          "billed_charge_cents": 12000,
+          "billed_charge_cents": 11800,
           "encounter_pos": null,
           "line_no": 1,
           "modifier": null,
@@ -43,7 +47,7 @@
           "units": 1
         },
         {
-          "billed_charge_cents": 9500,
+          "billed_charge_cents": 9200,
           "encounter_pos": null,
           "line_no": 2,
           "modifier": null,
@@ -51,11 +55,11 @@
           "units": 1
         },
         {
-          "billed_charge_cents": 76194,
+          "billed_charge_cents": 106842,
           "encounter_pos": "11",
           "line_no": 3,
           "modifier": null,
-          "raw_code": "99214",
+          "raw_code": "99215",
           "units": 1
         }
       ],
@@ -66,7 +70,159 @@
       "pilot_db_version": "see MANIFEST.json",
       "source_rows": [
         "80053/80048",
-        "99214"
+        "99215"
+      ],
+      "source_table": "ncci_ptp_edits+pfs"
+    }
+  },
+  {
+    "category": "demo_flow2_two_tier",
+    "demo_meta": {
+      "provider": "Bayview Medical Group",
+      "title": "Unbundled lipid panel + a ~4.5\u00d7 visit"
+    },
+    "expected": {
+      "findings": [
+        {
+          "code": "80061",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "82465",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "benchmark_cents": 16529,
+          "billed_multiple": 4.5,
+          "code": "99204",
+          "setting": "non_facility",
+          "tier": "solid_leverage",
+          "type": "price_benchmark"
+        },
+        {
+          "disallowed_code": "82465",
+          "indicator": 0,
+          "other_code": "80061",
+          "recoverable_cents": 4400,
+          "type": "unbundling_ptp"
+        }
+      ],
+      "leverage_top_multiple": 4.5,
+      "recoverable_total_cents": 4400
+    },
+    "fixture_id": "demo_flow2_two_tier_002",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 8600,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "80061",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 4400,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "82465",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 74380,
+          "encounter_pos": "11",
+          "line_no": 3,
+          "modifier": null,
+          "raw_code": "99204",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "self_pay",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "80061/82465",
+        "99204"
+      ],
+      "source_table": "ncci_ptp_edits+pfs"
+    }
+  },
+  {
+    "category": "demo_flow2_two_tier",
+    "demo_meta": {
+      "provider": "Northgate Clinic",
+      "title": "Unbundled CBC + a ~5.5\u00d7 procedure"
+    },
+    "expected": {
+      "findings": [
+        {
+          "code": "85025",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "85027",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "benchmark_cents": 6738,
+          "billed_multiple": 5.5,
+          "code": "17000",
+          "setting": "non_facility",
+          "tier": "strong_leverage",
+          "type": "price_benchmark"
+        },
+        {
+          "disallowed_code": "85027",
+          "indicator": 1,
+          "other_code": "85025",
+          "recoverable_cents": 2200,
+          "type": "unbundling_ptp"
+        }
+      ],
+      "leverage_top_multiple": 5.5,
+      "recoverable_total_cents": 2200
+    },
+    "fixture_id": "demo_flow2_two_tier_003",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 3800,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "85025",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 2200,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "85027",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 37059,
+          "encounter_pos": "11",
+          "line_no": 3,
+          "modifier": null,
+          "raw_code": "17000",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "self_pay",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "85025/85027",
+        "17000"
       ],
       "source_table": "ncci_ptp_edits+pfs"
     }

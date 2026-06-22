@@ -286,7 +286,8 @@ def build_flow1(conn, rng) -> dict[str, list[dict]]:
 
 
 # --- Flow 3 -----------------------------------------------------------------
-def make3_appeal(conn, fid, category, hcpcs, state, miles, insurance) -> dict:
+def make3_appeal(conn, fid, category, hcpcs, state, miles, insurance,
+                 denial_code="50", denial_type="CARC") -> dict:
     expected = reference_calc.compute_flow3(conn, hcpcs, state, miles, insurance)
     return {
         "fixture_id": fid, "flow": 3, "category": category,
@@ -295,7 +296,7 @@ def make3_appeal(conn, fid, category, hcpcs, state, miles, insurance) -> dict:
         "input": {"problem_type": "denial_appeal", "insurance_situation": insurance, "state": state,
                   "ambulance_claim": {"transport_hcpcs": hcpcs, "loaded_miles": miles,
                                       "is_emergency": 1, "denial_letter_date": "2026-03-20"},
-                  "denial_codes": [{"code": "50", "code_type": "CARC"}]},
+                  "denial_codes": [{"code": denial_code, "code_type": denial_type}]},
         "expected": expected,
     }
 
@@ -357,38 +358,133 @@ def build_flow3(conn, rng) -> dict[str, list[dict]]:
 
 
 # --- Curated demo scenarios (recognizable codes, high-impact) ---------------
+def _meta(fx, *, provider=None, title=None):
+    fx["demo_meta"] = {"provider": provider, "title": title}
+    return fx
+
+
+def _pfs_charge(conn, code, mult):
+    """Charge that lands a PFS line at ~mult× the (base-row) Medicare benchmark."""
+    return round(pilot.pfs_rate(conn, code, "non_facility")["benchmark_cents"] * mult)
+
+
+def _air(fid, code, title):
+    return {"fixture_id": fid, "flow": 3, "category": "demo_flow3_air",
+            "provenance": {"pilot_db_version": "see MANIFEST.json", "source_table": "codes",
+                           "source_rows": [code]},
+            "input": {"transport_hcpcs": code},
+            "expected": {"kind": "air", "routed_to_handoff": True},
+            "demo_meta": {"provider": None, "title": title}}
+
+
 def build_demo_scenarios(conn) -> dict[str, list[dict]]:
-    """A small, hand-picked set of viable, recognizable cases for live demos.
-    Built as real fixtures (verified by the runner) so the demo can't drift."""
+    """2–3 viable, recognizable cases per core scenario for live demos. Real fixtures
+    (verified by the runner), with varied providers/amounts/codes so the entered data
+    never echoes the form placeholders."""
     out: dict[str, list[dict]] = {}
-    out["demo_flow1_denied"] = [make1(
-        conn, "demo_flow1_denied_001", "demo_flow1_denied", "codes", ["CARC:50"],
-        bill={"provider_name": "Mercy General Hospital", "date_of_service_start": "2026-03-04",
-              "total_billed_cents": 124000, "total_plan_paid_cents": 0,
-              "patient_responsibility_cents": 124000},
-        denials=[{"code": "50", "code_type": "CARC"}], insurance="medicare_ffs")]
-    out["demo_flow2_unbundling"] = [make(
-        conn, "demo_flow2_unbundling_001", "demo_flow2_unbundling", "ncci_ptp_edits", ["80053/80048"],
-        [line(1, "80053", charge=12000), line(2, "80048", charge=9500)])]
-    out["demo_flow2_mue"] = [make(
-        conn, "demo_flow2_mue_001", "demo_flow2_mue", "ncci_mue", ["80053"],
-        [line(1, "80053", units=3, charge=12000)])]
-    out["demo_flow2_overcharge"] = [make(
-        conn, "demo_flow2_overcharge_001", "demo_flow2_overcharge", "physician_fee_schedule", ["99214"],
-        [line(1, "99214", charge=76194, pos="11")], insurance="self_pay")]
-    out["demo_flow2_two_tier"] = [make(
-        conn, "demo_flow2_two_tier_001", "demo_flow2_two_tier", "ncci_ptp_edits+pfs",
-        ["80053/80048", "99214"],
-        [line(1, "80053", charge=12000), line(2, "80048", charge=9500),
-         line(3, "99214", charge=76194, pos="11")], insurance="self_pay")]
-    out["demo_flow3_ground"] = [make3_appeal(
-        conn, "demo_flow3_ground_001", "demo_flow3_ground", "A0429", "CA", 12, "medicare_ffs")]
-    out["demo_flow3_air"] = [{
-        "fixture_id": "demo_flow3_air_001", "flow": 3, "category": "demo_flow3_air",
-        "provenance": {"pilot_db_version": "see MANIFEST.json", "source_table": "codes",
-                       "source_rows": ["A0430"]},
-        "input": {"transport_hcpcs": "A0430"},
-        "expected": {"kind": "air", "routed_to_handoff": True}}]
+
+    # Flow 1 — explain a denied bill
+    out["demo_flow1_denied"] = [
+        _meta(make1(conn, "demo_flow1_denied_001", "demo_flow1_denied", "codes", ["CARC:50"],
+              bill={"provider_name": "Cedar Park Family Clinic", "date_of_service_start": "2026-02-08",
+                    "total_billed_cents": 61000, "total_plan_paid_cents": 0,
+                    "patient_responsibility_cents": 61000},
+              denials=[{"code": "50", "code_type": "CARC"}], insurance="medicare_ffs"),
+              provider="Cedar Park Family Clinic", title="Denied as not medically necessary"),
+        _meta(make1(conn, "demo_flow1_denied_002", "demo_flow1_denied", "codes", ["CARC:197"],
+              bill={"provider_name": "Riverside Medical Center", "date_of_service_start": "2026-01-15",
+                    "total_billed_cents": 248000, "total_plan_paid_cents": 0,
+                    "patient_responsibility_cents": 248000},
+              denials=[{"code": "197", "code_type": "CARC"}], insurance="medicare_advantage"),
+              provider="Riverside Medical Center", title="Denied for missing prior authorization"),
+        _meta(make1(conn, "demo_flow1_denied_003", "demo_flow1_denied", "codes", ["RARC:N386"],
+              bill={"provider_name": "St. Luke's Regional", "date_of_service_start": "2025-11-30",
+                    "total_billed_cents": 94000, "total_plan_paid_cents": 0,
+                    "patient_responsibility_cents": 94000},
+              denials=[{"code": "N386", "code_type": "RARC"}], insurance="medicare_ffs"),
+              provider="St. Luke's Regional", title="Denied on a national coverage policy (NCD)"),
+    ]
+
+    # Flow 2 — unbundling (one service includes another)
+    out["demo_flow2_unbundling"] = [
+        _meta(make(conn, "demo_flow2_unbundling_001", "demo_flow2_unbundling", "ncci_ptp_edits",
+              ["80053/80048"], [line(1, "80053", charge=11800), line(2, "80048", charge=9200)]),
+              provider="Summit Diagnostic Lab", title="Comprehensive + basic metabolic panel"),
+        _meta(make(conn, "demo_flow2_unbundling_002", "demo_flow2_unbundling", "ncci_ptp_edits",
+              ["80061/82465"], [line(1, "80061", charge=8600), line(2, "82465", charge=4400)]),
+              provider="Bayview Labs", title="Lipid panel + standalone cholesterol"),
+        _meta(make(conn, "demo_flow2_unbundling_003", "demo_flow2_unbundling", "ncci_ptp_edits",
+              ["85025/85027"], [line(1, "85025", charge=3800), line(2, "85027", charge=2200)]),
+              provider="Northgate Clinical Lab", title="CBC with differential + CBC"),
+    ]
+
+    # Flow 2 — quantity over the daily cap (MUE)
+    out["demo_flow2_mue"] = [
+        _meta(make(conn, "demo_flow2_mue_001", "demo_flow2_mue", "ncci_mue", ["80061"],
+              [line(1, "80061", units=3, charge=12000)]),
+              provider="Summit Diagnostic Lab", title="Lipid panel billed 3× (daily max 1)"),
+        _meta(make(conn, "demo_flow2_mue_002", "demo_flow2_mue", "ncci_mue", ["85025"],
+              [line(1, "85025", units=4, charge=12000)]),
+              provider="Bayview Labs", title="CBC billed 4× (daily max 2)"),
+        _meta(make(conn, "demo_flow2_mue_003", "demo_flow2_mue", "ncci_mue", ["36415"],
+              [line(1, "36415", units=5, charge=7000)]),
+              provider="Northgate Urgent Care", title="Blood draw billed 5× (daily max 2)"),
+    ]
+
+    # Flow 2 — overcharge vs Medicare (PFS leverage)
+    out["demo_flow2_overcharge"] = [
+        _meta(make(conn, "demo_flow2_overcharge_001", "demo_flow2_overcharge",
+              "physician_fee_schedule", ["99215"],
+              [line(1, "99215", charge=_pfs_charge(conn, "99215", 6.0), pos="11")], insurance="self_pay"),
+              provider="Lakeshore Internal Medicine", title="Level-5 office visit at ~6× Medicare"),
+        _meta(make(conn, "demo_flow2_overcharge_002", "demo_flow2_overcharge",
+              "physician_fee_schedule", ["99204"],
+              [line(1, "99204", charge=_pfs_charge(conn, "99204", 4.0), pos="11")], insurance="self_pay"),
+              provider="Hillcrest Primary Care", title="New-patient visit at ~4× Medicare"),
+        _meta(make(conn, "demo_flow2_overcharge_003", "demo_flow2_overcharge",
+              "physician_fee_schedule", ["17000"],
+              [line(1, "17000", charge=_pfs_charge(conn, "17000", 5.5), pos="11")], insurance="self_pay"),
+              provider="Summit Dermatology", title="Lesion removal at ~5.5× Medicare"),
+    ]
+
+    # Flow 2 — error + overcharge together (two-tier card)
+    out["demo_flow2_two_tier"] = [
+        _meta(make(conn, "demo_flow2_two_tier_001", "demo_flow2_two_tier", "ncci_ptp_edits+pfs",
+              ["80053/80048", "99215"],
+              [line(1, "80053", charge=11800), line(2, "80048", charge=9200),
+               line(3, "99215", charge=_pfs_charge(conn, "99215", 6.0), pos="11")], insurance="self_pay"),
+              provider="Riverside Medical Center", title="Unbundled labs + a ~6× office visit"),
+        _meta(make(conn, "demo_flow2_two_tier_002", "demo_flow2_two_tier", "ncci_ptp_edits+pfs",
+              ["80061/82465", "99204"],
+              [line(1, "80061", charge=8600), line(2, "82465", charge=4400),
+               line(3, "99204", charge=_pfs_charge(conn, "99204", 4.5), pos="11")], insurance="self_pay"),
+              provider="Bayview Medical Group", title="Unbundled lipid panel + a ~4.5× visit"),
+        _meta(make(conn, "demo_flow2_two_tier_003", "demo_flow2_two_tier", "ncci_ptp_edits+pfs",
+              ["85025/85027", "17000"],
+              [line(1, "85025", charge=3800), line(2, "85027", charge=2200),
+               line(3, "17000", charge=_pfs_charge(conn, "17000", 5.5), pos="11")], insurance="self_pay"),
+              provider="Northgate Clinic", title="Unbundled CBC + a ~5.5× procedure"),
+    ]
+
+    # Flow 3 — ground ambulance appeal (varied LOS / state / segment)
+    out["demo_flow3_ground"] = [
+        _meta(make3_appeal(conn, "demo_flow3_ground_001", "demo_flow3_ground", "A0427", "TX", 18,
+              "medicare_ffs", denial_code="50"),
+              title="ALS1-emergency, Texas, 18 mi (Medicare)"),
+        _meta(make3_appeal(conn, "demo_flow3_ground_002", "demo_flow3_ground", "A0433", "NY", 9,
+              "medicare_advantage", denial_code="197"),
+              title="ALS2, New York, 9 mi (Medicare Advantage)"),
+        _meta(make3_appeal(conn, "demo_flow3_ground_003", "demo_flow3_ground", "A0434", "FL", 25,
+              "commercial_aca", denial_code="40"),
+              title="Specialty care transport, Florida, 25 mi (Commercial)"),
+    ]
+
+    # Flow 3 — air ambulance routes to a human advocate
+    out["demo_flow3_air"] = [
+        _air("demo_flow3_air_001", "A0431", "Rotary-wing air transport"),
+        _air("demo_flow3_air_002", "A0435", "Fixed-wing air mileage"),
+        _air("demo_flow3_air_003", "A0430", "Fixed-wing air transport"),
+    ]
     return out
 
 
@@ -485,109 +581,104 @@ def _d(cents) -> str:
     return f"${(cents or 0) / 100:,.2f}"
 
 
-def write_demo(categories: dict[str, list[dict]]) -> None:
-    """Render the curated demo scenarios into a leadership-ready walkthrough pack.
-    Numbers are pulled from each fixture's verified `expected`, so the pack always
-    matches what the engine is tested against (spec §6)."""
-    def one(cat):
-        fxs = categories.get(cat, [])
-        return fxs[0] if fxs else None
+_INS_LABEL = {"medicare_ffs": "Medicare", "medicare_advantage": "Medicare Advantage",
+              "commercial_aca": "Commercial / ACA", "employer_erisa": "Employer plan",
+              "self_pay": "Self-pay", "medicaid": "Medicaid"}
 
-    def pfs_bench(exp):
-        return next((f["benchmark_cents"] for f in exp["findings"]
-                     if f["type"] == "price_benchmark"), None)
 
-    cards = []
+def _pfs_bench(exp):
+    return next((f["benchmark_cents"] for f in exp["findings"] if f["type"] == "price_benchmark"), None)
 
-    fx = one("demo_flow1_denied")
-    if fx:
-        e = fx["expected"]
-        cards.append(
-            "## 1. Explain a denied bill (Flow 1)\n"
-            "- **In SAM:** *Understand my bill* → coverage *Medicare*.\n"
-            "- **Enter:** provider “Mercy General Hospital”, total billed **$1,240.00**, "
-            "you owe **$1,240.00**, denial code **CARC 50**.\n"
-            f"- **SAM shows:** the charge was denied as *not medically necessary* and that looks "
-            f"**appealable**; you owe **{_d(e['number_cents'])}**; offers to check for errors / start an appeal.\n"
-            f"- _verified fixture: {fx['fixture_id']}_")
 
-    fx = one("demo_flow2_unbundling")
-    if fx:
-        e = fx["expected"]
-        cards.append(
-            "## 2. Find a billing error — unbundled lab panel (Flow 2)\n"
-            "- **In SAM:** *Check it for errors & overcharges* → coverage *Medicare*.\n"
-            "- **Enter lines:** **80053** ×1 @ $120.00 (comprehensive metabolic panel); "
-            "**80048** ×1 @ $95.00 (basic metabolic panel).\n"
-            f"- **SAM shows:** **{_d(e['recoverable_total_cents'])}** likely billing error — 80048 is "
-            "bundled into 80053 (NCCI, never allowed together); ask to have it removed.\n"
-            f"- _verified fixture: {fx['fixture_id']}_")
+def _render_flow1(fx) -> str:
+    b, e = fx["input"]["bill_summary"], fx["expected"]
+    d = fx["input"]["denial_codes"][0]
+    ins = _INS_LABEL.get(fx["input"]["insurance_situation"], "Medicare")
+    verdict = "looks **appealable**" if e["appealable"] else "is explained in plain English"
+    return (f"- **In SAM:** *Understand my bill* → coverage *{ins}*.\n"
+            f"- **Enter:** provider “{fx['demo_meta']['provider']}”, total billed "
+            f"**{_d(b['total_billed_cents'])}**, you owe **{_d(b['patient_responsibility_cents'])}**, "
+            f"denial **{d['code_type']} {d['code']}**.\n"
+            f"- **SAM shows:** you owe **{_d(e['number_cents'])}**; the denial {verdict}, with the "
+            f"reason in plain English and a next step.\n"
+            f"- _fixture {fx['fixture_id']}_")
 
-    fx = one("demo_flow2_mue")
-    if fx:
-        e = fx["expected"]
-        cards.append(
-            "## 3. Find a billing error — units over the daily cap (Flow 2)\n"
-            "- **In SAM:** *Check it for errors & overcharges* → *Medicare*.\n"
-            "- **Enter line:** **80053** ×**3** @ $120.00.\n"
-            f"- **SAM shows:** **{_d(e['recoverable_total_cents'])}** likely error — Medicare's daily "
-            "maximum for 80053 is 1 unit; the 2 excess units can be questioned.\n"
-            f"- _verified fixture: {fx['fixture_id']}_")
 
-    fx = one("demo_flow2_overcharge")
-    if fx:
-        e = fx["expected"]
-        cards.append(
-            "## 4. Flag an overcharge — ×-Medicare leverage (Flow 2)\n"
-            "- **In SAM:** *Check it for errors & overcharges* → coverage *Self-pay*.\n"
-            "- **Enter line:** **99214** ×1 @ **$761.94**, place of service **11 (office)**.\n"
-            f"- **SAM shows:** this line is **≈{e['leverage_top_multiple']:.1f}× the Medicare benchmark** "
-            f"({_d(pfs_bench(e))}) — a strong basis to negotiate a reduction (framed as leverage, not “owed”).\n"
-            f"- _verified fixture: {fx['fixture_id']}_")
+def _render_flow2(fx) -> str:
+    ls, e = fx["input"]["bill_lines"], fx["expected"]
+    ins = _INS_LABEL.get(fx["input"]["insurance_situation"], "Medicare")
+    enter = "; ".join(
+        f"**{l['raw_code']}** ×{l['units']} @ {_d(l['billed_charge_cents'])}"
+        + (f" (POS {l['encounter_pos']})" if l.get("encounter_pos") else "")
+        for l in ls)
+    parts = []
+    if e["recoverable_total_cents"]:
+        parts.append(f"**{_d(e['recoverable_total_cents'])}** recoverable billing error")
+    if e["leverage_top_multiple"]:
+        parts.append(f"a line at **≈{e['leverage_top_multiple']:.1f}× the Medicare benchmark** "
+                     f"({_d(_pfs_bench(e))})")
+    shows = " and ".join(parts) if parts else "no clear error or overcharge"
+    return (f"- **In SAM:** *Check it for errors & overcharges* → coverage *{ins}*.\n"
+            f"- **Enter lines:** {enter}.\n"
+            f"- **SAM shows:** {shows}.\n"
+            f"- _fixture {fx['fixture_id']}_")
 
-    fx = one("demo_flow2_two_tier")
-    if fx:
-        e = fx["expected"]
-        cards.append(
-            "## 5. The full error + overcharge card (Flow 2, two tiers)\n"
-            "- **In SAM:** *Check it for errors & overcharges* → coverage *Self-pay*.\n"
-            "- **Enter lines:** **80053** @ $120.00; **80048** @ $95.00; **99214** @ $761.94 (POS 11).\n"
-            f"- **SAM shows two honest tiers:** **{_d(e['recoverable_total_cents'])} recoverable error** "
-            f"(unbundling) **and ≈{e['leverage_top_multiple']:.1f}× over benchmark** (negotiation leverage).\n"
-            f"- _verified fixture: {fx['fixture_id']}_")
 
-    fx = one("demo_flow3_ground")
-    if fx:
-        e = fx["expected"]
-        miles = fx["input"]["ambulance_claim"]["loaded_miles"]
-        cards.append(
-            "## 6. Build a ground-ambulance appeal (Flow 3)\n"
-            "- **In SAM:** *Appeal a denied ambulance claim* → coverage *Medicare*.\n"
-            f"- **Enter:** transport **A0429** (BLS-emergency), denial **CARC 50**, emergency **yes**, "
-            f"**{miles:g}** loaded miles, state **CA**.\n"
+def _render_flow3(fx) -> str:
+    c, e = fx["input"]["ambulance_claim"], fx["expected"]
+    d = fx["input"]["denial_codes"][0]
+    ins = _INS_LABEL.get(fx["input"]["insurance_situation"], "Medicare")
+    miles = c["loaded_miles"]
+    return (f"- **In SAM:** *Appeal a denied ambulance claim* → coverage *{ins}*.\n"
+            f"- **Enter:** transport **{c['transport_hcpcs']}**, denial **{d['code_type']} {d['code']}**, "
+            f"emergency **yes**, **{miles:g}** loaded miles, state **{fx['input']['state']}**.\n"
             f"- **SAM shows:** Medicare reasonable amount **≈ {_d(e['reasonable_amount_cents'])}** "
-            f"(base {_d(e['base_rate_cents'])} + {miles:g} mi × {_d(e['per_mile_rate_cents'])}); appeal "
-            f"**Level 1 — {e['appeal_level_ref']}** with deadline; ground-ambulance honesty note (not NSA).\n"
-            f"- _verified fixture: {fx['fixture_id']}_")
+            f"(base {_d(e['base_rate_cents'])} + {miles:g} mi × {_d(e['per_mile_rate_cents'])}); "
+            f"appeal **{e['appeal_level_ref']}** (NCD 10.1 {e['ncd_weight']}); ground-ambulance honesty note.\n"
+            f"- _fixture {fx['fixture_id']}_")
 
-    fx = one("demo_flow3_air")
-    if fx:
-        cards.append(
-            "## 7. Air ambulance routes to a human advocate (Flow 3 guardrail)\n"
-            "- **In SAM:** *Appeal a denied ambulance claim* → enter transport **A0430** (fixed-wing air).\n"
-            "- **SAM shows:** air ambulance is handled differently and may involve federal protections — "
-            "it hands off to a **human advocate** and makes no automated surprise-billing claims.\n"
-            f"- _verified fixture: {fx['fixture_id']}_")
+
+def _render_air(fx) -> str:
+    return (f"- **In SAM:** *Appeal a denied ambulance claim* → enter transport "
+            f"**{fx['input']['transport_hcpcs']}**.\n"
+            f"- **SAM shows:** air ambulance is handled differently — it routes to a **human advocate** "
+            f"and makes no automated surprise-billing (NSA) claims.\n"
+            f"- _fixture {fx['fixture_id']}_")
+
+
+def write_demo(categories: dict[str, list[dict]]) -> None:
+    """Render the curated demo scenarios (2–3 verified variants each) into a single
+    leadership walkthrough. Numbers come from each fixture's verified `expected`, so
+    the pack always matches what the engine is regression-tested against (spec §6)."""
+    groups = [
+        ("demo_flow1_denied", "Flow 1 — Explain a denied bill", _render_flow1),
+        ("demo_flow2_unbundling", "Flow 2 — Unbundling (one service includes another)", _render_flow2),
+        ("demo_flow2_mue", "Flow 2 — Quantity over the daily cap", _render_flow2),
+        ("demo_flow2_overcharge", "Flow 2 — Overcharge vs Medicare (negotiation leverage)", _render_flow2),
+        ("demo_flow2_two_tier", "Flow 2 — Error + overcharge together (two-tier card)", _render_flow2),
+        ("demo_flow3_ground", "Flow 3 — Ground ambulance appeal", _render_flow3),
+        ("demo_flow3_air", "Flow 3 — Air ambulance (routes to a human)", _render_air),
+    ]
+    sections = []
+    for n, (cat, title, render) in enumerate(groups, 1):
+        fxs = categories.get(cat, [])
+        if not fxs:
+            continue
+        variants = "\n\n".join(
+            f"**{n}.{i} {fx['demo_meta']['title']}**\n{render(fx)}" for i, fx in enumerate(fxs, 1))
+        sections.append(f"## {n}. {title}\n\n{variants}")
 
     intro = (
         "# SAM demo pack\n\n"
-        "Curated, verified scenarios for a live walkthrough. Every code is a **real** code from "
-        "`pilot.db`, so it resolves in the running app — these are genuine bills engineered to trigger "
-        "a finding, not junk. Each card is traceable to a committed test fixture, so what you demo "
-        "matches exactly what the engine is regression-tested against.\n\n"
-        "**To run:** open the app, tap **SAM** (bottom-right), and follow a card top to bottom.\n")
+        "Verified scenarios for a live walkthrough — **2–3 variants per core scenario** so you can "
+        "vary the data run to run and it never looks like you're just echoing the form's example "
+        "hints. Every code is a **real** `pilot.db` code, so it resolves in the running app; each "
+        "case is a committed test fixture, so what you demo matches exactly what the engine is "
+        "regression-tested against.\n\n"
+        "**To run:** open the app, tap **SAM** (bottom-right), pick any variant, and follow it top to "
+        "bottom. Self-pay is used for overcharge cases (so the leverage call-to-action is actionable).\n")
     (DEMO_DIR).mkdir(parents=True, exist_ok=True)
-    (DEMO_DIR / "sam_demo_pack.md").write_text(intro + "\n" + "\n\n".join(cards) + "\n",
+    (DEMO_DIR / "sam_demo_pack.md").write_text(intro + "\n" + "\n\n".join(sections) + "\n",
                                                encoding="utf-8")
 
 

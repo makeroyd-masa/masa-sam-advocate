@@ -1,12 +1,16 @@
 [
   {
     "category": "demo_flow2_overcharge",
+    "demo_meta": {
+      "provider": "Lakeshore Internal Medicine",
+      "title": "Level-5 office visit at ~6\u00d7 Medicare"
+    },
     "expected": {
       "findings": [
         {
-          "benchmark_cents": 12699,
+          "benchmark_cents": 17807,
           "billed_multiple": 6.0,
-          "code": "99214",
+          "code": "99215",
           "setting": "non_facility",
           "tier": "strong_leverage",
           "type": "price_benchmark"
@@ -20,11 +24,11 @@
     "input": {
       "bill_lines": [
         {
-          "billed_charge_cents": 76194,
+          "billed_charge_cents": 106842,
           "encounter_pos": "11",
           "line_no": 1,
           "modifier": null,
-          "raw_code": "99214",
+          "raw_code": "99215",
           "units": 1
         }
       ],
@@ -34,7 +38,95 @@
     "provenance": {
       "pilot_db_version": "see MANIFEST.json",
       "source_rows": [
-        "99214"
+        "99215"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  },
+  {
+    "category": "demo_flow2_overcharge",
+    "demo_meta": {
+      "provider": "Hillcrest Primary Care",
+      "title": "New-patient visit at ~4\u00d7 Medicare"
+    },
+    "expected": {
+      "findings": [
+        {
+          "benchmark_cents": 16529,
+          "billed_multiple": 4.0,
+          "code": "99204",
+          "setting": "non_facility",
+          "tier": "solid_leverage",
+          "type": "price_benchmark"
+        }
+      ],
+      "leverage_top_multiple": 4.0,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "demo_flow2_overcharge_002",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 66116,
+          "encounter_pos": "11",
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "99204",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "self_pay",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "99204"
+      ],
+      "source_table": "physician_fee_schedule"
+    }
+  },
+  {
+    "category": "demo_flow2_overcharge",
+    "demo_meta": {
+      "provider": "Summit Dermatology",
+      "title": "Lesion removal at ~5.5\u00d7 Medicare"
+    },
+    "expected": {
+      "findings": [
+        {
+          "benchmark_cents": 6738,
+          "billed_multiple": 5.5,
+          "code": "17000",
+          "setting": "non_facility",
+          "tier": "strong_leverage",
+          "type": "price_benchmark"
+        }
+      ],
+      "leverage_top_multiple": 5.5,
+      "recoverable_total_cents": 0
+    },
+    "fixture_id": "demo_flow2_overcharge_003",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 37059,
+          "encounter_pos": "11",
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "17000",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "self_pay",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "17000"
       ],
       "source_table": "physician_fee_schedule"
     }

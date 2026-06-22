@@ -1,13 +1,17 @@
 [
   {
     "category": "demo_flow1_denied",
+    "demo_meta": {
+      "provider": "Cedar Park Family Clinic",
+      "title": "Denied as not medically necessary"
+    },
     "expected": {
       "appealable": true,
       "denials_shown": [
         "CARC 50"
       ],
       "lines": [],
-      "number_cents": 124000,
+      "number_cents": 61000,
       "reconciliation": "denied_claim"
     },
     "fixture_id": "demo_flow1_denied_001",
@@ -15,10 +19,10 @@
     "input": {
       "bill_lines": [],
       "bill_summary": {
-        "date_of_service_start": "2026-03-04",
-        "patient_responsibility_cents": 124000,
-        "provider_name": "Mercy General Hospital",
-        "total_billed_cents": 124000,
+        "date_of_service_start": "2026-02-08",
+        "patient_responsibility_cents": 61000,
+        "provider_name": "Cedar Park Family Clinic",
+        "total_billed_cents": 61000,
         "total_plan_paid_cents": 0
       },
       "denial_codes": [
@@ -34,6 +38,92 @@
       "pilot_db_version": "see MANIFEST.json",
       "source_rows": [
         "CARC:50"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "demo_flow1_denied",
+    "demo_meta": {
+      "provider": "Riverside Medical Center",
+      "title": "Denied for missing prior authorization"
+    },
+    "expected": {
+      "appealable": true,
+      "denials_shown": [
+        "CARC 197"
+      ],
+      "lines": [],
+      "number_cents": 248000,
+      "reconciliation": "denied_claim"
+    },
+    "fixture_id": "demo_flow1_denied_002",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "date_of_service_start": "2026-01-15",
+        "patient_responsibility_cents": 248000,
+        "provider_name": "Riverside Medical Center",
+        "total_billed_cents": 248000,
+        "total_plan_paid_cents": 0
+      },
+      "denial_codes": [
+        {
+          "code": "197",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_advantage",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "CARC:197"
+      ],
+      "source_table": "codes"
+    }
+  },
+  {
+    "category": "demo_flow1_denied",
+    "demo_meta": {
+      "provider": "St. Luke's Regional",
+      "title": "Denied on a national coverage policy (NCD)"
+    },
+    "expected": {
+      "appealable": true,
+      "denials_shown": [
+        "RARC N386"
+      ],
+      "lines": [],
+      "number_cents": 94000,
+      "reconciliation": "denied_claim"
+    },
+    "fixture_id": "demo_flow1_denied_003",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "date_of_service_start": "2025-11-30",
+        "patient_responsibility_cents": 94000,
+        "provider_name": "St. Luke's Regional",
+        "total_billed_cents": 94000,
+        "total_plan_paid_cents": 0
+      },
+      "denial_codes": [
+        {
+          "code": "N386",
+          "code_type": "RARC"
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "RARC:N386"
       ],
       "source_table": "codes"
     }

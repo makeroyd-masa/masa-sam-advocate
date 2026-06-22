@@ -1,6 +1,10 @@
 [
   {
     "category": "demo_flow2_unbundling",
+    "demo_meta": {
+      "provider": "Summit Diagnostic Lab",
+      "title": "Comprehensive + basic metabolic panel"
+    },
     "expected": {
       "findings": [
         {
@@ -15,19 +19,19 @@
           "disallowed_code": "80048",
           "indicator": 0,
           "other_code": "80053",
-          "recoverable_cents": 9500,
+          "recoverable_cents": 9200,
           "type": "unbundling_ptp"
         }
       ],
       "leverage_top_multiple": null,
-      "recoverable_total_cents": 9500
+      "recoverable_total_cents": 9200
     },
     "fixture_id": "demo_flow2_unbundling_001",
     "flow": 2,
     "input": {
       "bill_lines": [
         {
-          "billed_charge_cents": 12000,
+          "billed_charge_cents": 11800,
           "encounter_pos": null,
           "line_no": 1,
           "modifier": null,
@@ -35,7 +39,7 @@
           "units": 1
         },
         {
-          "billed_charge_cents": 9500,
+          "billed_charge_cents": 9200,
           "encounter_pos": null,
           "line_no": 2,
           "modifier": null,
@@ -50,6 +54,124 @@
       "pilot_db_version": "see MANIFEST.json",
       "source_rows": [
         "80053/80048"
+      ],
+      "source_table": "ncci_ptp_edits"
+    }
+  },
+  {
+    "category": "demo_flow2_unbundling",
+    "demo_meta": {
+      "provider": "Bayview Labs",
+      "title": "Lipid panel + standalone cholesterol"
+    },
+    "expected": {
+      "findings": [
+        {
+          "code": "80061",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "82465",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "disallowed_code": "82465",
+          "indicator": 0,
+          "other_code": "80061",
+          "recoverable_cents": 4400,
+          "type": "unbundling_ptp"
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 4400
+    },
+    "fixture_id": "demo_flow2_unbundling_002",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 8600,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "80061",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 4400,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "82465",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "80061/82465"
+      ],
+      "source_table": "ncci_ptp_edits"
+    }
+  },
+  {
+    "category": "demo_flow2_unbundling",
+    "demo_meta": {
+      "provider": "Northgate Clinical Lab",
+      "title": "CBC with differential + CBC"
+    },
+    "expected": {
+      "findings": [
+        {
+          "code": "85025",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "code": "85027",
+          "type": "facility_unbenchmarked"
+        },
+        {
+          "disallowed_code": "85027",
+          "indicator": 1,
+          "other_code": "85025",
+          "recoverable_cents": 2200,
+          "type": "unbundling_ptp"
+        }
+      ],
+      "leverage_top_multiple": null,
+      "recoverable_total_cents": 2200
+    },
+    "fixture_id": "demo_flow2_unbundling_003",
+    "flow": 2,
+    "input": {
+      "bill_lines": [
+        {
+          "billed_charge_cents": 3800,
+          "encounter_pos": null,
+          "line_no": 1,
+          "modifier": null,
+          "raw_code": "85025",
+          "units": 1
+        },
+        {
+          "billed_charge_cents": 2200,
+          "encounter_pos": null,
+          "line_no": 2,
+          "modifier": null,
+          "raw_code": "85027",
+          "units": 1
+        }
+      ],
+      "insurance_situation": "medicare_ffs",
+      "problem_type": "error_overcharge"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "85025/85027"
       ],
       "source_table": "ncci_ptp_edits"
     }

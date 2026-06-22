@@ -1,14 +1,18 @@
 [
   {
     "category": "demo_flow3_ground",
+    "demo_meta": {
+      "provider": null,
+      "title": "ALS1-emergency, Texas, 18 mi (Medicare)"
+    },
     "expected": {
       "anchor_is_floor": 0,
       "appeal_level_ref": "Redetermination",
-      "base_rate_cents": 49736,
+      "base_rate_cents": 54123,
       "kind": "appeal",
       "ncd_weight": "binding",
       "per_mile_rate_cents": 915,
-      "reasonable_amount_cents": 60716,
+      "reasonable_amount_cents": 70593,
       "segment": "medicare_ffs"
     },
     "fixture_id": "demo_flow3_ground_001",
@@ -17,8 +21,8 @@
       "ambulance_claim": {
         "denial_letter_date": "2026-03-20",
         "is_emergency": 1,
-        "loaded_miles": 12,
-        "transport_hcpcs": "A0429"
+        "loaded_miles": 18,
+        "transport_hcpcs": "A0427"
       },
       "denial_codes": [
         {
@@ -28,13 +32,101 @@
       ],
       "insurance_situation": "medicare_ffs",
       "problem_type": "denial_appeal",
-      "state": "CA"
+      "state": "TX"
     },
     "provenance": {
       "pilot_db_version": "see MANIFEST.json",
       "source_rows": [
-        "A0429@CA",
-        "A0425@CA"
+        "A0427@TX",
+        "A0425@TX"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "demo_flow3_ground",
+    "demo_meta": {
+      "provider": null,
+      "title": "ALS2, New York, 9 mi (Medicare Advantage)"
+    },
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "MA Equivalent Process",
+      "base_rate_cents": 87347,
+      "kind": "appeal",
+      "ncd_weight": "binding",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 95582,
+      "segment": "medicare_advantage"
+    },
+    "fixture_id": "demo_flow3_ground_002",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 9,
+        "transport_hcpcs": "A0433"
+      },
+      "denial_codes": [
+        {
+          "code": "197",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "medicare_advantage",
+      "problem_type": "denial_appeal",
+      "state": "NY"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0433@NY",
+        "A0425@NY"
+      ],
+      "source_table": "ambulance_fee_schedule"
+    }
+  },
+  {
+    "category": "demo_flow3_ground",
+    "demo_meta": {
+      "provider": null,
+      "title": "Specialty care transport, Florida, 25 mi (Commercial)"
+    },
+    "expected": {
+      "anchor_is_floor": 0,
+      "appeal_level_ref": "Internal Appeal",
+      "base_rate_cents": 92352,
+      "kind": "appeal",
+      "ncd_weight": "persuasive",
+      "per_mile_rate_cents": 915,
+      "reasonable_amount_cents": 115227,
+      "segment": "commercial_aca"
+    },
+    "fixture_id": "demo_flow3_ground_003",
+    "flow": 3,
+    "input": {
+      "ambulance_claim": {
+        "denial_letter_date": "2026-03-20",
+        "is_emergency": 1,
+        "loaded_miles": 25,
+        "transport_hcpcs": "A0434"
+      },
+      "denial_codes": [
+        {
+          "code": "40",
+          "code_type": "CARC"
+        }
+      ],
+      "insurance_situation": "commercial_aca",
+      "problem_type": "denial_appeal",
+      "state": "FL"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "A0434@FL",
+        "A0425@FL"
       ],
       "source_table": "ambulance_fee_schedule"
     }
