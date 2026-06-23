@@ -6,10 +6,21 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: #e9e8ee; }
 
+/* Center a fixed iPhone-Pro-sized "shell" on a neutral backdrop. The React mount
+   (#root) is the flex container; `align-items: safe center` centers vertically when
+   the window is tall enough and falls back to top-aligned (scrollable, never
+   clipped) when it isn't. */
+#root {
+  min-height: 100vh; padding: 20px 12px;
+  display: flex; justify-content: center; align-items: safe center;
+}
+
 .sam-root {
-  max-width: 430px; margin: 0 auto; min-height: 100vh; position: relative;
-  background: #fff; overflow: hidden; display: flex; flex-direction: column;
-  box-shadow: 0 0 40px rgba(35, 8, 113, 0.12);
+  width: 430px; height: 932px;            /* iPhone 15/16 Pro Max footprint */
+  flex: 0 0 auto;
+  position: relative; background: #fff; overflow: hidden;
+  display: flex; flex-direction: column;
+  border-radius: 46px; box-shadow: 0 24px 70px rgba(35, 8, 113, 0.22);
 }
 
 /* ---------- host app chrome (Claims background) ---------- */
