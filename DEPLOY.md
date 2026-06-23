@@ -38,7 +38,10 @@ paths (`./data/pilot.db`, `./app.db`) automatically — nothing to upload.
 
 ---
 
-## B. Railway (Hobby — durable link) ← chosen
+## B. Railway (Hobby — durable link) ← chosen, LIVE
+
+Currently deployed at **https://masa-sam-advocate-production-2d4f.up.railway.app**
+(login `masa` / `sam-demo-2026`). The notes below are the as-built recipe.
 
 Needs a Railway account on the **Hobby** plan (~$5/mo; the free trial's 0.5 GB volume
 can't hold the 1 GB DB). Railway has no file upload to volumes, so the container
@@ -46,39 +49,62 @@ can't hold the 1 GB DB). Railway has no file upload to volumes, so the container
 points the build at the `Dockerfile` and the healthcheck at `/health` (with a 600 s
 timeout to cover that first download).
 
-**Step 1 — host `pilot.db` at a download URL** (pick one):
-- Cloudflare R2 / S3 / Backblaze B2 — a public or presigned object URL. No token (simplest).
-- A **GitHub Release asset** on this (private) repo — set `PILOT_DB_BEARER` to a token
-  with repo-read and use the API asset URL:
-  `https://api.github.com/repos/makeroyd-masa/masa-sam-advocate/releases/assets/<ASSET_ID>`
-  (the fetcher drops the token on the redirect to signed storage).
+**Step 1 — host `pilot.db` at a download URL.** We use a **GitHub Release asset on this
+(private) repo**, served behind a read-only token (chosen over R2/S3 to keep the DB
+private with no extra infra). To (re)create it:
+```bash
+# gh CLI must be authenticated. On Windows, gh's default secure storage (keyring) is
+# NOT readable from non-interactive/background shells — log in with --insecure-storage
+# so the token lands in %APPDATA%\GitHub CLI\hosts.yml and every shell can see it:
+gh auth login --hostname github.com --git-protocol https --web --insecure-storage
 
-**Step 2 — create the service** (dashboard or CLI):
-- New project → **Deploy from GitHub repo** → branch `build/sam-prototype`. Railway reads
-  `railway.json` and builds the `Dockerfile`.
+gh release create pilot-db data/pilot.db --repo makeroyd-masa/masa-sam-advocate \
+  --title "pilot.db (reference DB)" --notes "Read-only Medicare reference DB for SAM deploys."
+# get the asset id for the download URL:
+gh api repos/makeroyd-masa/masa-sam-advocate/releases/tags/pilot-db --jq '.assets[] | {name,id,size}'
+```
+The live asset is **id `455933508`**, so the URL is
+`https://api.github.com/repos/makeroyd-masa/masa-sam-advocate/releases/assets/455933508`.
+The fetcher (`scripts/fetch_pilot_db.py`) sends `Authorization: Bearer <PILOT_DB_BEARER>`
++ `Accept: application/octet-stream` and **drops the token on the 302 redirect to signed
+storage**. `PILOT_DB_BEARER` is a **fine-grained PAT scoped to this repo, `Contents: Read`
+only** (release assets are part of Contents). If you set an expiry on that PAT, the
+first-boot fetch starts 401'ing after that date — only matters on a fresh volume.
+> Alternative host: a public R2/S3/B2 object URL needs no token (drop `PILOT_DB_BEARER`),
+> but then the 1 GB reference DB is publicly downloadable.
+
+**Step 2 — create the service** (dashboard):
+- New project → **Deploy from GitHub repo** → pick `masa-sam-advocate`. If it's not listed,
+  **Configure GitHub App** and grant Railway access to the `makeroyd-masa` org first.
+- **Settings → Source:** set the deploy **branch to `build/sam-prototype`** (Railway defaults
+  to `main`). Railway reads `railway.json` and builds the `Dockerfile`.
 - Add a **Volume** mounted at **`/data`** (size ≥ 2 GB).
-- Set **Variables**:
+- Set **Variables** (Raw Editor → **paste, then Save** — an unsaved editor is the #1 gotcha):
   ```
   DEMO_USER=masa
   DEMO_PASSWORD=<choose>
   PILOT_DB_PATH=/data/pilot.db
   APP_DB_PATH=/data/app.db
-  PILOT_DB_URL=<your hosted URL>
-  PILOT_DB_BEARER=<token>     # only if the URL needs auth
+  PILOT_DB_URL=https://api.github.com/repos/makeroyd-masa/masa-sam-advocate/releases/assets/455933508
+  PILOT_DB_BEARER=<read-only PAT>     # only if the URL needs auth
   ```
   (`PORT` is injected by Railway automatically.)
+  **Set these BEFORE the first deploy.** If the container boots with `PILOT_DB_URL` unset it
+  logs `WARNING: pilot.db not found ... and PILOT_DB_URL unset`, skips the download, and comes
+  up degraded (`/health` still returns 200 — it reports degraded in the body, so the
+  healthcheck passes). Fix: set the vars, then **Redeploy**; the next boot fetches the DB.
 - **Deploy.** First boot streams the 1 GB DB to the volume (a few minutes); later deploys
-  are fast since the volume persists. `app.db` also lives on `/data`, so cases persist.
+  are fast since the volume persists and the fetch self-skips. `app.db` also lives on `/data`,
+  so cases persist. **Settings → Networking → Generate Domain** for the public URL.
 
-**Step 3 — open** the Railway-provided URL and log in with `DEMO_USER` / `DEMO_PASSWORD`.
+**Step 3 — verify & open.** Confirm `GET /health` shows `"status":"ok"` with
+`pilot_db.connected: true` and a non-zero `carc_codes` count (the live deploy reads 308),
+and that `GET /` returns **401** unauthenticated (the password gate is active). Then open the
+URL and log in with `DEMO_USER` / `DEMO_PASSWORD`.
 
-CLI equivalent (after `railway login` && `railway link`):
-```bash
-railway volume add --mount-path /data           # ≥ 2 GB
-railway variables set DEMO_USER=masa DEMO_PASSWORD=... \
-  PILOT_DB_PATH=/data/pilot.db APP_DB_PATH=/data/app.db PILOT_DB_URL=...
-railway up
-```
+> **Don't delete the `pilot-db` release** — a fresh volume can't rebuild without it.
+> To ship app updates, push to `build/sam-prototype`; Railway auto-redeploys and the DB stays
+> on the volume untouched.
 
 ---
 
