@@ -1,0 +1,33 @@
+# ============================================================================
+# config/code_labels.yaml  |  v0.1
+# MASA-authored plain-English labels for procedure / lab codes (CPT / HCPCS).
+#
+# WHY THIS EXISTS
+#   CPT descriptors are AMA-licensed and are NOT stored in pilot.db (PRD §2.1), so
+#   procedure lines would otherwise show only a code number. These are MASA's own
+#   short, member-friendly labels — MASA owns the wording and any AMA licensing.
+#
+# HOW TO ADJUST (easy)
+#   Just edit this file: add/change "<code>": "<label>" lines. The app reads this
+#   file fresh on each request, so a saved change shows on the next refresh — no
+#   restart or redeploy needed. Keys are the bare code; matching is case-insensitive.
+#   Anything not listed here simply shows the code number (no label).
+# ============================================================================
+version: "0.1"
+labels:
+  # Lab panels / tests
+  "80053": "Comprehensive metabolic panel"
+  "80048": "Basic metabolic panel"
+  "80061": "Lipid panel"
+  "82465": "Cholesterol (blood) test"
+  "85025": "Complete blood count (CBC) with differential"
+  "85027": "Complete blood count (CBC)"
+  "36415": "Routine blood draw"
+  # Office / outpatient visits
+  "99203": "Office visit, new patient (level 3)"
+  "99204": "Office visit, new patient (level 4)"
+  "99213": "Office visit, established patient (level 3)"
+  "99214": "Office visit, established patient (level 4)"
+  "99215": "Office visit, established patient (level 5)"
+  # Procedures
+  "17000": "Skin lesion removal (first lesion)"

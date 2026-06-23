@@ -77,3 +77,18 @@ def pos_facility_map() -> dict:
 def escalation_config() -> dict:
     """Human-advocate handoff triggers. PRD §7.7."""
     return _load_yaml("escalation.yaml")
+
+
+def code_label(code: str) -> str | None:
+    """MASA-authored plain label for a procedure/lab code, or None. Read fresh
+    (NOT cached) so edits to config/code_labels.yaml take effect on the next
+    request without a restart. Matching is case-insensitive."""
+    code = (code or "").strip()
+    if not code:
+        return None
+    try:
+        with open(CONFIG_DIR / "code_labels.yaml", encoding="utf-8") as f:
+            labels = (yaml.safe_load(f) or {}).get("labels", {})
+    except FileNotFoundError:
+        return None
+    return labels.get(code) or labels.get(code.upper())

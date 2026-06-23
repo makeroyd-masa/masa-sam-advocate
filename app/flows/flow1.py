@@ -14,6 +14,7 @@ import sqlite3
 from .. import pilot, repo
 from .. import router as denial_router
 from ..answer_card import AnswerCard, Citation, Finding, ReconRow, dollars
+from ..config import code_label
 
 
 def _reconcile(bill: dict | None) -> tuple[list[ReconRow], str | None]:
@@ -49,21 +50,23 @@ def _reconcile(bill: dict | None) -> tuple[list[ReconRow], str | None]:
 
 def _describe_line(pilot_conn: sqlite3.Connection, line: dict) -> Finding:
     raw = line["raw_code"]
+    label = code_label(raw)            # MASA-owned plain label (config/code_labels.yaml)
     info = pilot.lookup_code(pilot_conn, raw)
     if info and info["code_type"] not in ("CARC", "RARC"):
-        desc = info["short_description"] or info["official_text"] or "(no description on file)"
+        desc = label or info["short_description"] or info["official_text"] or "(no description on file)"
         return Finding(
-            title=f"{raw} — {info['code_type']}",
-            text=desc,
+            title=f"{raw} — {desc}",
+            text=info["short_description"] or info["official_text"] or "",
             tone="neutral",
             citation=Citation("code_set", raw, f"source · {info['code_type']}"),
         )
-    # CPT (and anything not in `codes`) → category fallback (AMA license, PRD §2.1).
+    # CPT (and anything not in `codes`) → MASA label if available, else category
+    # fallback (CPT descriptors are AMA-licensed and not stored, PRD §2.1).
     if (line.get("detected_code_type") or "").upper() == "CPT":
         return Finding(
-            title=f"{raw} — procedure (rate only)",
-            text="I can show the Medicare rate for this code, but the AMA license means the "
-                 "full description isn't printable here.",
+            title=f"{raw} — {label}" if label else f"{raw} — procedure (rate only)",
+            text="I can show the Medicare rate for this code; the full AMA description "
+                 "isn't printable here.",
             tone="ok",
             citation=Citation("code_set", raw, "source · CPT (detection only)"),
         )

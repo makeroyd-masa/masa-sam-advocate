@@ -19,7 +19,13 @@ from itertools import combinations
 
 from .. import pilot, repo
 from ..answer_card import AnswerCard, Citation, Finding, dollars
-from ..config import pos_facility_map, pricing_thresholds
+from ..config import code_label, pos_facility_map, pricing_thresholds
+
+
+def _lbl(code: str) -> str:
+    """'code (Plain label)' when MASA has labeled it, else just the code."""
+    label = code_label(code)
+    return f"{code} ({label})" if label else code
 
 
 def pos_setting(pos: str | None) -> str:
@@ -83,9 +89,9 @@ def analyze(app_conn: sqlite3.Connection, pilot_conn: sqlite3.Connection, case_i
             ptp_modifier_indicator=ind, recoverable_cents=recoverable,
         )
         findings.append(Finding(
-            title=f"Possible unbundling — {edit['column_one_code']} + {edit['column_two_code']}",
-            text=f"These appear to be billed separately when one includes the other. "
-                 f"The {edit['column_two_code']} line ({dollars(recoverable)}) can be questioned.",
+            title=f"Possible unbundling — {_lbl(edit['column_one_code'])} + {_lbl(edit['column_two_code'])}",
+            text=f"These appear to be billed separately when one already includes the other. "
+                 f"The {_lbl(edit['column_two_code'])} line ({dollars(recoverable)}) can be questioned.",
             tone="error",
             citation=Citation("ncci_ptp",
                               edit["edit_id"] or f"{edit['column_one_code']}/{edit['column_two_code']}",
@@ -109,7 +115,7 @@ def analyze(app_conn: sqlite3.Connection, pilot_conn: sqlite3.Connection, case_i
             recoverable_cents=recoverable,
         )
         findings.append(Finding(
-            title=f"Units over the daily cap — {ln['raw_code']}",
+            title=f"Units over the daily cap — {_lbl(ln['raw_code'])}",
             text=f"Billed {units} units; the Medicare daily maximum is {cap['mue_value']}. "
                  f"The {excess} excess unit(s) (~{dollars(recoverable)}) can be questioned.",
             tone="error",
@@ -145,7 +151,7 @@ def analyze(app_conn: sqlite3.Connection, pilot_conn: sqlite3.Connection, case_i
                else "useful context — for an insured plan your share is set by the allowed amount, "
                     "not this gross charge")
         findings.append(Finding(
-            title=f"{ln['raw_code']} billed at {dollars(charge)}",
+            title=f"{_lbl(ln['raw_code'])} billed at {dollars(charge)}",
             text=f"That's about {multiple:.1f}× the Medicare benchmark ({dollars(bench)}) — {cta}.",
             tone="leverage",
             citation=Citation("pfs", ln["raw_code"], f"PFS · {setting} · POS {ln.get('encounter_pos') or '—'}"),
