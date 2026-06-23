@@ -94,6 +94,8 @@ def explain(app_conn: sqlite3.Connection, pilot_conn: sqlite3.Connection, case_i
         )
         copy = decision.copy
         text = copy.plain_explanation or copy.official_text or "(no description on file)"
+        if copy.practical_meaning:
+            text = f"{text} {copy.practical_meaning}"
         tone = "error" if decision.action in ("appeal", "error_check") else "ok"
         findings.append(Finding(
             title=f"{d['code_type']} {d['code']}",

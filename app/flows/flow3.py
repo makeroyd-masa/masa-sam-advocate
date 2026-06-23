@@ -84,10 +84,15 @@ def analyze(app_conn: sqlite3.Connection, pilot_conn: sqlite3.Connection, case_i
         )
         if decision.action == "appeal" or denial_basis is None:
             denial_basis = f"{d['code_type']} {d['code']}"
-            text = decision.copy.official_text or "Denied by the payer."
+            copy = decision.copy
+            # Prefer the plain-English copy when authored (matches Flow 1); fall back
+            # to the payer's official wording. Append practical context if present.
+            text = copy.plain_explanation or copy.official_text or "Denied by the payer."
+            if copy.practical_meaning:
+                text = f"{text} {copy.practical_meaning}"
             findings.append(Finding(
                 title=f"Denied on {denial_basis}",
-                text=text[:160],
+                text=text,
                 tone="error",
                 citation=Citation("code_explanation", denial_basis, f"source · {denial_basis}"),
             ))
@@ -144,7 +149,9 @@ def analyze(app_conn: sqlite3.Connection, pilot_conn: sqlite3.Connection, case_i
             reasonable = base + round(per_mile * miles)
             findings.append(Finding(
                 title="Medicare reasonable amount",
-                text=f"Base {dollars(base)} + {miles:g} loaded miles "
+                text=f"Medicare pays a base rate for this level of ambulance service, plus a set "
+                     f"amount for each mile you were actually carried (your “loaded miles”). "
+                     f"Here: base {dollars(base)} + {miles:g} loaded miles × {dollars(per_mile)}/mile "
                      f"({dollars(round(per_mile * miles))}) = {dollars(reasonable)}.",
                 tone="neutral",
                 citation=Citation("ambulance_fs", f"{hcpcs}@{state}", f"Ambulance FS · {state}"),
@@ -154,8 +161,10 @@ def analyze(app_conn: sqlite3.Connection, pilot_conn: sqlite3.Connection, case_i
             anchor_is_floor = 1
             findings.append(Finding(
                 title="Medicare reasonable amount (floor)",
-                text=f"At least {dollars(base)} (base rate) — likely more once loaded mileage "
-                     f"is added.",
+                text=f"Medicare pays a base rate for this level of service plus a set amount per "
+                     f"“loaded mile” (the miles you were actually carried). Without your "
+                     f"mileage this is the base rate only — at least {dollars(base)}; it will be "
+                     f"higher once loaded miles are added.",
                 tone="neutral",
                 citation=Citation("ambulance_fs", f"{hcpcs}@{state}", f"Ambulance FS · {state}"),
             ))
