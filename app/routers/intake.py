@@ -119,6 +119,9 @@ def stage2(case_id: int, req: Stage2Req, app_db: sqlite3.Connection = Depends(ge
         date_of_service_end=req.date_of_service_end, total_billed_cents=req.total_billed_cents,
         total_allowed_cents=req.total_allowed_cents, total_plan_paid_cents=req.total_plan_paid_cents,
         patient_responsibility_cents=req.patient_responsibility_cents, notes=req.notes,
+        copay_cents=req.copay_cents, deductible_applied_cents=req.deductible_applied_cents,
+        coinsurance_cents=req.coinsurance_cents, not_covered_cents=req.not_covered_cents,
+        discount_cents=req.discount_cents, coinsurance_rate_pct=req.coinsurance_rate_pct,
     )
 
     # Capture + classify any denial codes the member could read (the §5 dispatcher).

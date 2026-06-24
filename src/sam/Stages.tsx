@@ -66,18 +66,21 @@ export function Launcher({ seedNote, onPick, onClose }:
 }
 
 // --- Stage 1 insurance ------------------------------------------------------
+// Ordered toward MASA's member base: Group members skew working-age with
+// employer/commercial plans; Medicare recipients are often barred from enrolling,
+// so Medicare/MA sit lower. See docs PRD addendum (segment strategy).
 const SITUATIONS: { v: InsuranceSituation; label: string }[] = [
-  { v: "medicare_ffs", label: "Medicare" },
-  { v: "medicare_advantage", label: "Medicare Advantage" },
-  { v: "commercial_aca", label: "Commercial / ACA" },
   { v: "employer_erisa", label: "Employer plan" },
-  { v: "medicaid", label: "Medicaid" },
+  { v: "commercial_aca", label: "Commercial / ACA" },
   { v: "self_pay", label: "Self-pay" },
+  { v: "medicare_advantage", label: "Medicare Advantage" },
+  { v: "medicare_ffs", label: "Medicare" },
+  { v: "medicaid", label: "Medicaid" },
 ];
 export function Stage1({ onContinue, onClose, busy, total }:
   { onContinue: (ins: InsuranceSituation, plan?: string) => void; onClose: () => void;
     busy: boolean; total: number }) {
-  const [sel, setSel] = useState<InsuranceSituation>("medicare_ffs");
+  const [sel, setSel] = useState<InsuranceSituation>("employer_erisa");
   const [plan, setPlan] = useState("");
   return (
     <Sheet subtitle={`Step 1 of ${total}`} onClose={onClose}
@@ -102,14 +105,24 @@ export function Stage1({ onContinue, onClose, busy, total }:
 export function Stage2({ onContinue, onClose, busy, ctaLabel, total }:
   { onContinue: (p: Record<string, unknown>) => void; onClose: () => void; busy: boolean;
     ctaLabel: string; total: number }) {
-  const [f, setF] = useState({ provider: "", dos: "", billed: "", paid: "", owe: "", denial: "" });
+  const [f, setF] = useState({
+    provider: "", dos: "", billed: "", paid: "", owe: "", denial: "",
+    allowed: "", copay: "", deductible: "", coins: "", notcov: "", rate: "",
+  });
   const up = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
+  const pct = (s: string) => { const n = parseFloat(s); return Number.isFinite(n) ? n : null; };
   const submit = () => onContinue({
     provider_name: f.provider || null,
     date_of_service_start: f.dos || null,
     total_billed_cents: toCents(f.billed),
+    total_allowed_cents: toCents(f.allowed),
     total_plan_paid_cents: toCents(f.paid),
     patient_responsibility_cents: toCents(f.owe),
+    copay_cents: toCents(f.copay),
+    deductible_applied_cents: toCents(f.deductible),
+    coinsurance_cents: toCents(f.coins),
+    not_covered_cents: toCents(f.notcov),
+    coinsurance_rate_pct: pct(f.rate),
     denial_codes: f.denial ? [f.denial] : [],
   });
   return (
@@ -126,7 +139,20 @@ export function Stage2({ onContinue, onClose, busy, ctaLabel, total }:
         <div className="fld"><label>Plan paid</label><input className="input" value={f.paid} onChange={(e) => up("paid", e.target.value)} placeholder="$0.00" /></div>
         <div className="fld"><label>You owe</label><input className="input" value={f.owe} onChange={(e) => up("owe", e.target.value)} placeholder="$1,240.00" /></div>
       </div>
-      <div className="fld"><label>Any denial codes you can read? <span style={{ color: "var(--masa-harbor)", fontWeight: 400 }}>(optional)</span></label>
+      <p className="q" style={{ marginTop: 18, fontSize: 15 }}>From your EOB <span style={{ color: "var(--masa-harbor)", fontWeight: 400 }}>(optional — lets me check the math)</span></p>
+      <div className="two">
+        <div className="fld"><label>Allowed amount</label><input className="input" value={f.allowed} onChange={(e) => up("allowed", e.target.value)} placeholder="$199.75" /></div>
+        <div className="fld"><label>Copay</label><input className="input" value={f.copay} onChange={(e) => up("copay", e.target.value)} placeholder="$30.00" /></div>
+      </div>
+      <div className="two">
+        <div className="fld"><label>Applied to deductible</label><input className="input" value={f.deductible} onChange={(e) => up("deductible", e.target.value)} placeholder="$0.00" /></div>
+        <div className="fld"><label>Coinsurance</label><input className="input" value={f.coins} onChange={(e) => up("coins", e.target.value)} placeholder="$0.00" /></div>
+      </div>
+      <div className="two">
+        <div className="fld"><label>Not covered</label><input className="input" value={f.notcov} onChange={(e) => up("notcov", e.target.value)} placeholder="$0.00" /></div>
+        <div className="fld"><label>Coinsurance rate %</label><input className="input" value={f.rate} onChange={(e) => up("rate", e.target.value)} placeholder="20" /></div>
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}><label>Any denial codes you can read? <span style={{ color: "var(--masa-harbor)", fontWeight: 400 }}>(optional)</span></label>
         <input className="input" value={f.denial} onChange={(e) => up("denial", e.target.value)} placeholder="e.g. CARC 50" /></div>
       <p className="hint">A denial code helps me route you to the right next step automatically.</p>
     </Sheet>

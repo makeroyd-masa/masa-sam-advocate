@@ -55,6 +55,14 @@ class Stage2Req(BaseModel):
     patient_responsibility_cents: int | None = None
     notes: str | None = None
     denial_codes: list[str] = Field(default_factory=list)   # free text, e.g. ["CARC 50"]
+    # Cost-share breakdown the member can read off a transparent EOB (PRD addendum:
+    # cost-share v0.1). All optional; powers the Flow 1 cost-share check.
+    copay_cents: int | None = None
+    deductible_applied_cents: int | None = None
+    coinsurance_cents: int | None = None
+    not_covered_cents: int | None = None
+    discount_cents: int | None = None
+    coinsurance_rate_pct: float | None = None
 
 
 class BillLineIn(BaseModel):

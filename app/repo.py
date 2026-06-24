@@ -97,6 +97,9 @@ def upsert_bill_summary(conn: sqlite3.Connection, case_id: int, **fields) -> Non
         "provider_name", "date_of_service_start", "date_of_service_end",
         "total_billed_cents", "total_allowed_cents", "total_plan_paid_cents",
         "patient_responsibility_cents", "notes",
+        # Cost-share breakdown (PRD addendum: cost-share v0.1).
+        "copay_cents", "deductible_applied_cents", "coinsurance_cents",
+        "not_covered_cents", "discount_cents", "coinsurance_rate_pct",
     ]
     vals = [fields.get(c) for c in cols]
     updates = ", ".join(f"{c} = excluded.{c}" for c in cols)
