@@ -194,7 +194,16 @@ def _build_card(recoverable: int, top_multiple: float, findings: list[Finding],
         number2_label="over benchmark — negotiation leverage" if has_leverage else None,
         findings=findings,
         next_action=next_action,
-        framing_note="These appear to be errors based on Medicare coding rules — not a final "
-                     "determination of what you owe.",
+        framing_note=_framing_note(has_leverage),
         escalation_offered=True,
     )
+
+
+def _framing_note(has_leverage: bool) -> str:
+    note = ("These appear to be errors based on Medicare coding rules — not a final "
+            "determination of what you owe.")
+    if has_leverage:
+        # Transparency: Medicare is the yardstick, not a claim about your coverage.
+        note += (" We compare charges to the Medicare rate because it's the most consistent "
+                 "public benchmark — it's a reference point, not your plan's coverage.")
+    return note
