@@ -14,7 +14,8 @@ import sqlite3
 from .. import pilot, repo
 from .. import router as denial_router
 from ..answer_card import AnswerCard, Citation, Finding, ReconRow, dollars
-from ..config import code_label
+from ..config import code_label, feature_flags
+from . import cost_share
 
 
 def _reconcile(bill: dict | None) -> tuple[list[ReconRow], str | None]:
@@ -117,6 +118,15 @@ def explain(app_conn: sqlite3.Connection, pilot_conn: sqlite3.Connection, case_i
     rows, recon_note = _reconcile(bill)
     if recon_note:
         findings.append(Finding(title="How your share was reached", text=recon_note, tone="neutral"))
+
+    # Cost-share verification for insured members (PRD addendum, behind the counsel
+    # kill-switch). Checks the share arithmetic the EOB asserts but doesn't prove.
+    if feature_flags().get("cost_share_check_enabled", False):
+        cs_findings, cs_flagged = cost_share.check(
+            bill, case["insurance_situation"], has_denial_code=bool(denials)
+        )
+        findings.extend(cs_findings)
+        error_likely = error_likely or cs_flagged
 
     # Headline + framing reflect what we found.
     if appealable:

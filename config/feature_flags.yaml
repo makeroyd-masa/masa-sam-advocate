@@ -18,3 +18,11 @@ flags:
   # UPL counsel gate (PRD §8). When false, generated appeal letters stay at
   # letter_status='pending_counsel_review' and are not surfaced to the member.
   appeal_letter_generation_enabled: false
+
+  # Cost-share verification layer (PRD addendum: cost-share v0.1). When true, Flow 1
+  # checks the EOB's cost-share arithmetic for insured members (reconciliation,
+  # coinsurance rate, not-covered routing). NOT a content/legal gate like the three
+  # above — it surfaces arithmetic discrepancies in the same register as Flow 1's
+  # existing reconciliation note, so it defaults ON. Kept as a flag so counsel has a
+  # kill-switch (gate F4) without a code change.
+  cost_share_check_enabled: true
