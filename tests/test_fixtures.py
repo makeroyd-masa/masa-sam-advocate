@@ -122,6 +122,15 @@ def _flow1_actual(card: dict, input_lines: list[dict]) -> dict:
             lines.append({"code": code, "kind": "unrecognized", "description": None})
         else:
             lines.append({"code": code, "kind": "described", "description": f["text"]})
+    cost_share = []
+    for f in card["findings"]:
+        t = f["title"]
+        if t == "The parts of your share don't add up":
+            cost_share.append(canonical.cost_share_finding("reconciliation_gap"))
+        elif t.startswith("Coinsurance doesn't match"):
+            cost_share.append(canonical.cost_share_finding("coinsurance_mismatch"))
+        elif t.endswith("was marked not covered"):
+            cost_share.append(canonical.cost_share_finding("not_covered"))
     return {
         "number_cents": card["number_cents"],
         "reconciliation": recon,
@@ -129,6 +138,7 @@ def _flow1_actual(card: dict, input_lines: list[dict]) -> dict:
         "lines": lines,
         "denials_shown": sorted(x["title"] for x in card["findings"]
                                 if re.match(r"^(CARC|RARC) ", x["title"])),
+        "cost_share": canonical.sort_cost_share(cost_share),
     }
 
 

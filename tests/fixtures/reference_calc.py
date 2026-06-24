@@ -16,7 +16,7 @@ import canonical
 import yaml
 
 from app import pilot
-from app.config import CONFIG_DIR, pos_facility_map, pricing_thresholds
+from app.config import CONFIG_DIR, feature_flags, pos_facility_map, pricing_thresholds
 
 # Independent copy of the §5 routing → flow map (mirrors app.router, not imported).
 _ACTION_TO_FLOW = {
@@ -178,6 +178,37 @@ def _classify_line(pilot_conn: sqlite3.Connection, raw_code: str) -> dict:
     return {"code": raw_code, "kind": "unrecognized", "description": None}
 
 
+_COST_SHARE_INSURED = ("employer_erisa", "commercial_aca")
+_COINS_TOLERANCE_CENTS = 100
+
+
+def compute_cost_share(bill: dict, insurance_situation: str | None,
+                       has_denial_code: bool) -> list[dict]:
+    """Independent reimplementation of app.flows.cost_share.check (engine not imported).
+    Mirrors the LITE-scope checks (#1 reconciliation, #2 coinsurance rate, #5
+    not-covered routing) and the same kill-switch + insured-only scope guard."""
+    if not feature_flags().get("cost_share_check_enabled", False):
+        return []
+    if not bill or insurance_situation not in _COST_SHARE_INSURED:
+        return []
+    out: list[dict] = []
+    parts = [bill.get(k) for k in ("copay_cents", "deductible_applied_cents",
+                                   "coinsurance_cents", "not_covered_cents")]
+    resp = bill.get("patient_responsibility_cents")
+    if resp is not None and all(p is not None for p in parts) and sum(parts) != resp:
+        out.append(canonical.cost_share_finding("reconciliation_gap"))
+    rate, allowed = bill.get("coinsurance_rate_pct"), bill.get("total_allowed_cents")
+    ded, coins = bill.get("deductible_applied_cents"), bill.get("coinsurance_cents")
+    if None not in (rate, allowed, ded, coins):
+        expected = round((rate / 100.0) * max(allowed - ded, 0))
+        if abs(expected - coins) > _COINS_TOLERANCE_CENTS:
+            out.append(canonical.cost_share_finding("coinsurance_mismatch"))
+    nc = bill.get("not_covered_cents")
+    if not has_denial_code and nc and nc > 0:
+        out.append(canonical.cost_share_finding("not_covered"))
+    return canonical.sort_cost_share(out)
+
+
 def compute_flow1(pilot_conn: sqlite3.Connection, bill: dict, lines: list[dict],
                   denials: list[dict], insurance_situation: str | None) -> dict:
     member_billed = bool((bill.get("patient_responsibility_cents") or 0) > 0)
@@ -192,6 +223,7 @@ def compute_flow1(pilot_conn: sqlite3.Connection, bill: dict, lines: list[dict],
         "appealable": appealable,
         "lines": [_classify_line(pilot_conn, ln["raw_code"]) for ln in lines],
         "denials_shown": sorted(f"{d['code_type']} {d['code']}" for d in denials),
+        "cost_share": compute_cost_share(bill, insurance_situation, bool(denials)),
     }
 
 

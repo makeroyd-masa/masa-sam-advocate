@@ -46,8 +46,13 @@ def line(no, code, *, units=1, charge=None, modifier=None, pos=None) -> dict:
             "billed_charge_cents": charge, "modifier": modifier, "encounter_pos": pos}
 
 
+# Default persona for Flow 1/2 fixtures is the Group base (working-age, employer
+# plan). insurance_situation is incidental to the Flow 1/2 math (NCCI/MUE/PFS and
+# the reconciliation are insurance-agnostic), so this only shifts representativeness,
+# not any computed `expected`. Medicare/MA stays where it's load-bearing: Flow 3
+# appeals + the denial-routing matrix. (PRD addendum: segment direction.)
 def make(pilot_conn, fid, category, source_table, source_rows, lines,
-         insurance="medicare_ffs") -> dict:
+         insurance="employer_erisa") -> dict:
     expected = reference_calc.compute_flow2(pilot_conn, lines)
     return {
         "fixture_id": fid, "flow": 2, "category": category,
@@ -207,7 +212,7 @@ def build_pfs(conn, rng) -> dict[str, list[dict]]:
 
 # --- Flow 1 -----------------------------------------------------------------
 def make1(conn, fid, category, source_table, source_rows, *, bill=None, lines=None,
-          denials=None, insurance="medicare_ffs") -> dict:
+          denials=None, insurance="employer_erisa") -> dict:
     bill, lines, denials = bill or {}, lines or [], denials or []
     expected = reference_calc.compute_flow1(conn, bill, lines, denials, insurance)
     return {
@@ -283,6 +288,57 @@ def build_flow1(conn, rng) -> dict[str, list[dict]]:
     out["waterfall_consistent"] = cons
     out["waterfall_broken"] = broke
     return out
+
+
+# --- Flow 1 cost-share verification (PRD addendum: cost-share v0.1) ----------
+def build_cost_share(conn) -> dict[str, list[dict]]:
+    """Cost-share fixtures for insured members. Synthetic numbers mirroring real-EOB
+    shapes (no PHI): #1 reconciliation gap, a clean copay, #2 coinsurance-rate
+    mismatch, #5 not-covered routing, plus self-pay/partial scope guards. The
+    `expected` cost_share is computed independently by reference_calc."""
+    cs = [
+        # #1 reconciliation gap — bill-level reconciles (paid+resp==allowed) but the
+        # share parts fall $60 short of what you owe (the hospital-EOB shape).
+        make1(conn, "flow1_costshare_recon_gap_001", "cost_share", "synthetic", ["n/a"],
+              bill={"total_billed_cents": 823215, "total_allowed_cents": 576466,
+                    "total_plan_paid_cents": 427921, "patient_responsibility_cents": 148545,
+                    "copay_cents": 10000, "deductible_applied_cents": 20038,
+                    "coinsurance_cents": 112507, "not_covered_cents": 0},
+              insurance="employer_erisa"),
+        # #1 clean — the parts add up exactly; no finding (the office-visit shape).
+        make1(conn, "flow1_costshare_clean_002", "cost_share", "synthetic", ["n/a"],
+              bill={"total_billed_cents": 38100, "total_allowed_cents": 19975,
+                    "total_plan_paid_cents": 16975, "patient_responsibility_cents": 3000,
+                    "copay_cents": 3000, "deductible_applied_cents": 0,
+                    "coinsurance_cents": 0, "not_covered_cents": 0},
+              insurance="commercial_aca"),
+        # #2 coinsurance-rate mismatch — parts reconcile, but coinsurance != 20% of
+        # (allowed - deductible).
+        make1(conn, "flow1_costshare_coins_mismatch_003", "cost_share", "synthetic", ["n/a"],
+              bill={"total_billed_cents": 800000, "total_allowed_cents": 576466,
+                    "total_plan_paid_cents": 406428, "patient_responsibility_cents": 170038,
+                    "copay_cents": 0, "deductible_applied_cents": 20038,
+                    "coinsurance_cents": 150000, "not_covered_cents": 0,
+                    "coinsurance_rate_pct": 20},
+              insurance="employer_erisa"),
+        # #5 not-covered → routing (no denial code captured).
+        make1(conn, "flow1_costshare_not_covered_004", "cost_share", "synthetic", ["n/a"],
+              bill={"total_billed_cents": 50000, "patient_responsibility_cents": 5000,
+                    "not_covered_cents": 5000},
+              insurance="commercial_aca"),
+        # scope guard — same gap as #001, but self-pay → the check does not run.
+        make1(conn, "flow1_costshare_scope_selfpay_005", "cost_share", "synthetic", ["n/a"],
+              bill={"total_allowed_cents": 576466, "total_plan_paid_cents": 427921,
+                    "patient_responsibility_cents": 148545, "copay_cents": 10000,
+                    "deductible_applied_cents": 20038, "coinsurance_cents": 112507,
+                    "not_covered_cents": 0},
+              insurance="self_pay"),
+        # partial breakdown — only copay entered → incomplete, no false positive.
+        make1(conn, "flow1_costshare_partial_006", "cost_share", "synthetic", ["n/a"],
+              bill={"patient_responsibility_cents": 3000, "copay_cents": 3000},
+              insurance="employer_erisa"),
+    ]
+    return {"cost_share": cs}
 
 
 # --- Flow 3 -----------------------------------------------------------------
@@ -466,6 +522,32 @@ def build_demo_scenarios(conn) -> dict[str, list[dict]]:
               provider="Northgate Clinic", title="Unbundled CBC + a ~5.5× procedure"),
     ]
 
+    # Flow 1 — cost-share verification (insured members; the Group-segment direction)
+    out["demo_costshare"] = [
+        _meta(make1(conn, "demo_costshare_001", "demo_costshare", "synthetic", ["n/a"],
+              bill={"provider_name": "Orlando Health Medical Center", "date_of_service_start": "2026-03-24",
+                    "total_billed_cents": 823215, "total_allowed_cents": 576466,
+                    "total_plan_paid_cents": 427921, "patient_responsibility_cents": 148545,
+                    "copay_cents": 10000, "deductible_applied_cents": 20038,
+                    "coinsurance_cents": 112507, "not_covered_cents": 0},
+              insurance="employer_erisa"),
+              provider="Orlando Health Medical Center", title="Hospital share that doesn't add up"),
+        _meta(make1(conn, "demo_costshare_002", "demo_costshare", "synthetic", ["n/a"],
+              bill={"provider_name": "Lakeside Imaging", "date_of_service_start": "2026-02-11",
+                    "total_billed_cents": 800000, "total_allowed_cents": 576466,
+                    "total_plan_paid_cents": 406428, "patient_responsibility_cents": 170038,
+                    "copay_cents": 0, "deductible_applied_cents": 20038,
+                    "coinsurance_cents": 150000, "not_covered_cents": 0, "coinsurance_rate_pct": 20},
+              insurance="commercial_aca"),
+              provider="Lakeside Imaging", title="Coinsurance that doesn't match the plan rate"),
+        _meta(make1(conn, "demo_costshare_003", "demo_costshare", "synthetic", ["n/a"],
+              bill={"provider_name": "Summit Surgical Center", "date_of_service_start": "2026-01-20",
+                    "total_billed_cents": 64000, "patient_responsibility_cents": 18000,
+                    "not_covered_cents": 18000},
+              insurance="employer_erisa"),
+              provider="Summit Surgical Center", title="A not-covered charge to question"),
+    ]
+
     # Flow 3 — ground ambulance appeal (varied LOS / state / segment)
     out["demo_flow3_ground"] = [
         _meta(make3_appeal(conn, "demo_flow3_ground_001", "demo_flow3_ground", "A0427", "TX", 18,
@@ -624,6 +706,32 @@ def _render_flow2(fx) -> str:
             f"- _fixture {fx['fixture_id']}_")
 
 
+def _render_costshare(fx) -> str:
+    b, e = fx["input"]["bill_summary"], fx["expected"]
+    ins = _INS_LABEL.get(fx["input"]["insurance_situation"], "Employer plan")
+    kinds = [f["kind"] for f in e["cost_share"]]
+    if "reconciliation_gap" in kinds:
+        parts = (b.get("copay_cents") or 0) + (b.get("deductible_applied_cents") or 0) \
+            + (b.get("coinsurance_cents") or 0) + (b.get("not_covered_cents") or 0)
+        shows = (f"the parts of your share (copay {_d(b.get('copay_cents'))} + deductible "
+                 f"{_d(b.get('deductible_applied_cents'))} + coinsurance {_d(b.get('coinsurance_cents'))} "
+                 f"= **{_d(parts)}**) don't add up to the **{_d(b['patient_responsibility_cents'])}** you "
+                 f"owe — worth a closer look")
+    elif "coinsurance_mismatch" in kinds:
+        shows = (f"the **{_d(b.get('coinsurance_cents'))}** coinsurance doesn't match your "
+                 f"{b.get('coinsurance_rate_pct'):g}% rate on the allowed amount — worth a closer look")
+    elif "not_covered" in kinds:
+        shows = (f"a **{_d(b.get('not_covered_cents'))}** not-covered amount — a coverage question to "
+                 f"appeal, not a pricing issue")
+    else:
+        shows = "the cost-share math checks out"
+    return (f"- **In SAM:** *Understand my bill* → coverage *{ins}*.\n"
+            f"- **Enter:** provider “{fx['demo_meta']['provider']}”, then the cost-share split from your "
+            f"EOB.\n"
+            f"- **SAM shows:** {shows}.\n"
+            f"- _fixture {fx['fixture_id']}_")
+
+
 def _render_flow3(fx) -> str:
     c, e = fx["input"]["ambulance_claim"], fx["expected"]
     d = fx["input"]["denial_codes"][0]
@@ -652,6 +760,7 @@ def write_demo(categories: dict[str, list[dict]]) -> None:
     the pack always matches what the engine is regression-tested against (spec §6)."""
     groups = [
         ("demo_flow1_denied", "Flow 1 — Explain a denied bill", _render_flow1),
+        ("demo_costshare", "Flow 1 — Cost-share check (does your share add up?)", _render_costshare),
         ("demo_flow2_unbundling", "Flow 2 — Unbundling (one service includes another)", _render_flow2),
         ("demo_flow2_mue", "Flow 2 — Quantity over the daily cap", _render_flow2),
         ("demo_flow2_overcharge", "Flow 2 — Overcharge vs Medicare (negotiation leverage)", _render_flow2),
@@ -698,6 +807,7 @@ def main() -> int:
     categories.update(build_mue(conn, rng))
     categories.update(build_pfs(conn, rng))
     categories.update(build_flow1(conn, rng))
+    categories.update(build_cost_share(conn))
     categories.update(build_flow3(conn, rng))
     categories.update(build_demo_scenarios(conn))
 

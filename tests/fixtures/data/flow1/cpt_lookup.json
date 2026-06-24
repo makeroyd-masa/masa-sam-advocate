@@ -3,6 +3,7 @@
     "category": "cpt_lookup",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [
         {
@@ -29,7 +30,7 @@
       ],
       "bill_summary": {},
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
@@ -44,6 +45,7 @@
     "category": "cpt_lookup",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [
         {
@@ -70,7 +72,7 @@
       ],
       "bill_summary": {},
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
@@ -85,6 +87,7 @@
     "category": "cpt_lookup",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [
         {
@@ -111,7 +114,7 @@
       ],
       "bill_summary": {},
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {

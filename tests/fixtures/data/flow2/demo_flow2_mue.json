@@ -35,7 +35,7 @@
           "units": 3
         }
       ],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "error_overcharge"
     },
     "provenance": {
@@ -82,7 +82,7 @@
           "units": 4
         }
       ],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "error_overcharge"
     },
     "provenance": {
@@ -129,7 +129,7 @@
           "units": 5
         }
       ],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "error_overcharge"
     },
     "provenance": {

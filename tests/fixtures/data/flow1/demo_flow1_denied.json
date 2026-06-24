@@ -7,6 +7,7 @@
     },
     "expected": {
       "appealable": true,
+      "cost_share": [],
       "denials_shown": [
         "CARC 50"
       ],
@@ -50,6 +51,7 @@
     },
     "expected": {
       "appealable": true,
+      "cost_share": [],
       "denials_shown": [
         "CARC 197"
       ],
@@ -93,6 +95,7 @@
     },
     "expected": {
       "appealable": true,
+      "cost_share": [],
       "denials_shown": [
         "RARC N386"
       ],

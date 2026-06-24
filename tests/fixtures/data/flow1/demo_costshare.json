@@ -1,0 +1,139 @@
+[
+  {
+    "category": "demo_costshare",
+    "demo_meta": {
+      "provider": "Orlando Health Medical Center",
+      "title": "Hospital share that doesn't add up"
+    },
+    "expected": {
+      "appealable": false,
+      "cost_share": [
+        {
+          "kind": "reconciliation_gap",
+          "type": "cost_share"
+        }
+      ],
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 148545,
+      "reconciliation": "consistent"
+    },
+    "fixture_id": "demo_costshare_001",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "coinsurance_cents": 112507,
+        "copay_cents": 10000,
+        "date_of_service_start": "2026-03-24",
+        "deductible_applied_cents": 20038,
+        "not_covered_cents": 0,
+        "patient_responsibility_cents": 148545,
+        "provider_name": "Orlando Health Medical Center",
+        "total_allowed_cents": 576466,
+        "total_billed_cents": 823215,
+        "total_plan_paid_cents": 427921
+      },
+      "denial_codes": [],
+      "insurance_situation": "employer_erisa",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "demo_costshare",
+    "demo_meta": {
+      "provider": "Lakeside Imaging",
+      "title": "Coinsurance that doesn't match the plan rate"
+    },
+    "expected": {
+      "appealable": false,
+      "cost_share": [
+        {
+          "kind": "coinsurance_mismatch",
+          "type": "cost_share"
+        }
+      ],
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 170038,
+      "reconciliation": "consistent"
+    },
+    "fixture_id": "demo_costshare_002",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "coinsurance_cents": 150000,
+        "coinsurance_rate_pct": 20,
+        "copay_cents": 0,
+        "date_of_service_start": "2026-02-11",
+        "deductible_applied_cents": 20038,
+        "not_covered_cents": 0,
+        "patient_responsibility_cents": 170038,
+        "provider_name": "Lakeside Imaging",
+        "total_allowed_cents": 576466,
+        "total_billed_cents": 800000,
+        "total_plan_paid_cents": 406428
+      },
+      "denial_codes": [],
+      "insurance_situation": "commercial_aca",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "demo_costshare",
+    "demo_meta": {
+      "provider": "Summit Surgical Center",
+      "title": "A not-covered charge to question"
+    },
+    "expected": {
+      "appealable": false,
+      "cost_share": [
+        {
+          "kind": "not_covered",
+          "type": "cost_share"
+        }
+      ],
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 18000,
+      "reconciliation": null
+    },
+    "fixture_id": "demo_costshare_003",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "date_of_service_start": "2026-01-20",
+        "not_covered_cents": 18000,
+        "patient_responsibility_cents": 18000,
+        "provider_name": "Summit Surgical Center",
+        "total_billed_cents": 64000
+      },
+      "denial_codes": [],
+      "insurance_situation": "employer_erisa",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  }
+]

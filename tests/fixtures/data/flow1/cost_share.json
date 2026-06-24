@@ -1,0 +1,222 @@
+[
+  {
+    "category": "cost_share",
+    "expected": {
+      "appealable": false,
+      "cost_share": [
+        {
+          "kind": "reconciliation_gap",
+          "type": "cost_share"
+        }
+      ],
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 148545,
+      "reconciliation": "consistent"
+    },
+    "fixture_id": "flow1_costshare_recon_gap_001",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "coinsurance_cents": 112507,
+        "copay_cents": 10000,
+        "deductible_applied_cents": 20038,
+        "not_covered_cents": 0,
+        "patient_responsibility_cents": 148545,
+        "total_allowed_cents": 576466,
+        "total_billed_cents": 823215,
+        "total_plan_paid_cents": 427921
+      },
+      "denial_codes": [],
+      "insurance_situation": "employer_erisa",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "cost_share",
+    "expected": {
+      "appealable": false,
+      "cost_share": [],
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 3000,
+      "reconciliation": "consistent"
+    },
+    "fixture_id": "flow1_costshare_clean_002",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "coinsurance_cents": 0,
+        "copay_cents": 3000,
+        "deductible_applied_cents": 0,
+        "not_covered_cents": 0,
+        "patient_responsibility_cents": 3000,
+        "total_allowed_cents": 19975,
+        "total_billed_cents": 38100,
+        "total_plan_paid_cents": 16975
+      },
+      "denial_codes": [],
+      "insurance_situation": "commercial_aca",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "cost_share",
+    "expected": {
+      "appealable": false,
+      "cost_share": [
+        {
+          "kind": "coinsurance_mismatch",
+          "type": "cost_share"
+        }
+      ],
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 170038,
+      "reconciliation": "consistent"
+    },
+    "fixture_id": "flow1_costshare_coins_mismatch_003",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "coinsurance_cents": 150000,
+        "coinsurance_rate_pct": 20,
+        "copay_cents": 0,
+        "deductible_applied_cents": 20038,
+        "not_covered_cents": 0,
+        "patient_responsibility_cents": 170038,
+        "total_allowed_cents": 576466,
+        "total_billed_cents": 800000,
+        "total_plan_paid_cents": 406428
+      },
+      "denial_codes": [],
+      "insurance_situation": "employer_erisa",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "cost_share",
+    "expected": {
+      "appealable": false,
+      "cost_share": [
+        {
+          "kind": "not_covered",
+          "type": "cost_share"
+        }
+      ],
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 5000,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_costshare_not_covered_004",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "not_covered_cents": 5000,
+        "patient_responsibility_cents": 5000,
+        "total_billed_cents": 50000
+      },
+      "denial_codes": [],
+      "insurance_situation": "commercial_aca",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "cost_share",
+    "expected": {
+      "appealable": false,
+      "cost_share": [],
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 148545,
+      "reconciliation": "consistent"
+    },
+    "fixture_id": "flow1_costshare_scope_selfpay_005",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "coinsurance_cents": 112507,
+        "copay_cents": 10000,
+        "deductible_applied_cents": 20038,
+        "not_covered_cents": 0,
+        "patient_responsibility_cents": 148545,
+        "total_allowed_cents": 576466,
+        "total_plan_paid_cents": 427921
+      },
+      "denial_codes": [],
+      "insurance_situation": "self_pay",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  },
+  {
+    "category": "cost_share",
+    "expected": {
+      "appealable": false,
+      "cost_share": [],
+      "denials_shown": [],
+      "lines": [],
+      "number_cents": 3000,
+      "reconciliation": null
+    },
+    "fixture_id": "flow1_costshare_partial_006",
+    "flow": 1,
+    "input": {
+      "bill_lines": [],
+      "bill_summary": {
+        "copay_cents": 3000,
+        "patient_responsibility_cents": 3000
+      },
+      "denial_codes": [],
+      "insurance_situation": "employer_erisa",
+      "problem_type": "explain"
+    },
+    "provenance": {
+      "pilot_db_version": "see MANIFEST.json",
+      "source_rows": [
+        "n/a"
+      ],
+      "source_table": "synthetic"
+    }
+  }
+]

@@ -44,6 +44,16 @@ def facility_finding(code: str) -> dict:
     return {"type": "facility_unbenchmarked", "code": code}
 
 
+def cost_share_finding(kind: str) -> dict:
+    """A normalized cost-share verification finding (PRD addendum: cost-share v0.1).
+    kind ∈ {'reconciliation_gap','coinsurance_mismatch','not_covered'}."""
+    return {"type": "cost_share", "kind": kind}
+
+
+def sort_cost_share(findings: list[dict]) -> list[dict]:
+    return sorted(findings, key=lambda f: f["kind"])
+
+
 def recon_category(note_text: str | None) -> str | None:
     """Classify a Flow 1 reconciliation note into a stable enum (shared by the
     runner and reference_calc so both speak the same language)."""

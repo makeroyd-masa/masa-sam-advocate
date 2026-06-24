@@ -3,6 +3,7 @@
     "category": "waterfall_consistent",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [],
       "number_cents": 8000,
@@ -19,7 +20,7 @@
         "total_plan_paid_cents": 32000
       },
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
@@ -34,6 +35,7 @@
     "category": "waterfall_consistent",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [],
       "number_cents": 9000,
@@ -50,7 +52,7 @@
         "total_plan_paid_cents": 36000
       },
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
@@ -65,6 +67,7 @@
     "category": "waterfall_consistent",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [],
       "number_cents": 10000,
@@ -81,7 +84,7 @@
         "total_plan_paid_cents": 40000
       },
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
@@ -96,6 +99,7 @@
     "category": "waterfall_consistent",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [],
       "number_cents": 11000,
@@ -112,7 +116,7 @@
         "total_plan_paid_cents": 44000
       },
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
@@ -127,6 +131,7 @@
     "category": "waterfall_consistent",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [],
       "number_cents": 12000,
@@ -143,7 +148,7 @@
         "total_plan_paid_cents": 48000
       },
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
@@ -158,6 +163,7 @@
     "category": "waterfall_consistent",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [],
       "number_cents": 13000,
@@ -174,7 +180,7 @@
         "total_plan_paid_cents": 52000
       },
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
@@ -189,6 +195,7 @@
     "category": "waterfall_consistent",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [],
       "number_cents": 14000,
@@ -205,7 +212,7 @@
         "total_plan_paid_cents": 56000
       },
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
@@ -220,6 +227,7 @@
     "category": "waterfall_consistent",
     "expected": {
       "appealable": false,
+      "cost_share": [],
       "denials_shown": [],
       "lines": [],
       "number_cents": 15000,
@@ -236,7 +244,7 @@
         "total_plan_paid_cents": 60000
       },
       "denial_codes": [],
-      "insurance_situation": "medicare_ffs",
+      "insurance_situation": "employer_erisa",
       "problem_type": "explain"
     },
     "provenance": {
