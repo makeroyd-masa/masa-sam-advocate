@@ -18,6 +18,14 @@ app.db
 # ...but the tiny committed slim DB for dependency-free CI is an exception
 !tests/fixtures/ci_pilot.db
 
+# PHI — real member EOBs used as design evidence. NEVER commit (guardrail:
+# "PHI stays in app.db only; no documents are stored"). Referenced by filename
+# in docs/PRD_addendum_costshare_v0_1.md but kept out of version control.
+docs/eob_table_example.png
+docs/full_eob_example.pdf
+docs/*_eob_*.pdf
+docs/*_eob_*.png
+
 # Env / secrets
 .env
 .env.local
