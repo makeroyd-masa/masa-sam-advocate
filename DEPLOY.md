@@ -105,6 +105,13 @@ URL and log in with `DEMO_USER` / `DEMO_PASSWORD`.
 > **Don't delete the `pilot-db` release** — a fresh volume can't rebuild without it.
 > To ship app updates, push to `build/sam-prototype`; Railway auto-redeploys and the DB stays
 > on the volume untouched.
+>
+> **Schema changes auto-migrate.** `entrypoint.sh` runs `init_app_db.py` on every boot. On the
+> persistent volume's existing `app.db` it applies any not-yet-applied **additive** deltas
+> (`docs/app_schema_v*.sql`, gated on a sentinel column so re-runs are no-ops) — so a redeploy
+> that adds columns picks them up without wiping in-session cases. Deltas must stay additive
+> (`ALTER ADD COLUMN` / `CREATE TABLE IF NOT EXISTS`); a destructive schema change still needs a
+> manual `--force` recreate (fine here — demo data, no real PHI).
 
 ---
 
