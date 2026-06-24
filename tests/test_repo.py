@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from conftest import apply_schema
+
 from app import repo
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -16,7 +18,7 @@ def conn(tmp_path):
     c = sqlite3.connect(tmp_path / "app.db")
     c.row_factory = sqlite3.Row
     c.execute("PRAGMA foreign_keys = ON")
-    c.executescript(SCHEMA.read_text(encoding="utf-8"))
+    apply_schema(c)
     repo.upsert_member(c, "m1", default_insurance_situation="medicare_ffs")
     try:
         yield c

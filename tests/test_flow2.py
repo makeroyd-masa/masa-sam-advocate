@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from conftest import apply_schema
+
 from app import repo
 from app.db import get_app_db, get_pilot_db
 from app.flows import flow2
@@ -30,7 +32,7 @@ def app_db(tmp_path):
     c = sqlite3.connect(tmp_path / "app.db")
     c.row_factory = sqlite3.Row
     c.execute("PRAGMA foreign_keys = ON")
-    c.executescript(SCHEMA.read_text(encoding="utf-8"))
+    apply_schema(c)
     p = _pilot()
     load_code_explanations(c, p)
     p.close()

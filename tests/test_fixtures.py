@@ -13,6 +13,8 @@ from pathlib import Path
 
 import pytest
 
+from conftest import apply_schema
+
 TESTS = Path(__file__).resolve().parent
 REPO_ROOT = TESTS.parent
 FIX = TESTS / "fixtures"
@@ -57,7 +59,7 @@ def env(tmp_path_factory):
     app_conn = sqlite3.connect(app_path)
     app_conn.row_factory = sqlite3.Row
     app_conn.execute("PRAGMA foreign_keys = ON")
-    app_conn.executescript(SCHEMA.read_text(encoding="utf-8"))
+    apply_schema(app_conn)
     repo.upsert_member(app_conn, "m1")
     pilot_conn = sqlite3.connect(f"file:{PILOT}?mode=ro", uri=True)
     pilot_conn.row_factory = sqlite3.Row

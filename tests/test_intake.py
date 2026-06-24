@@ -9,6 +9,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from conftest import apply_schema
+
 from app.db import get_app_db, get_pilot_db
 from app.loader import load_code_explanations
 from app.main import app
@@ -26,7 +28,7 @@ def client(tmp_path):
     # Build schema + load the routing layer so Stage-2 classification is real.
     boot = sqlite3.connect(app_db_path)
     boot.row_factory = sqlite3.Row
-    boot.executescript(SCHEMA.read_text(encoding="utf-8"))
+    apply_schema(boot)
     pilot_boot = sqlite3.connect(f"file:{PILOT}?mode=ro", uri=True)
     pilot_boot.row_factory = sqlite3.Row
     load_code_explanations(boot, pilot_boot)

@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from conftest import apply_schema
+
 from app import repo
 from app.answer_card import dollars
 from app.db import get_app_db, get_pilot_db
@@ -32,7 +34,7 @@ def app_db(tmp_path):
     c = sqlite3.connect(path)
     c.row_factory = sqlite3.Row
     c.execute("PRAGMA foreign_keys = ON")
-    c.executescript(SCHEMA.read_text(encoding="utf-8"))
+    apply_schema(c)
     p = _pilot()
     load_code_explanations(c, p)
     p.close()
@@ -72,6 +74,58 @@ def test_explain_denied_claim_is_appealable(app_db):
     assert carc.citation.source_type == "code_explanation"
     # full-denial reconciliation note
     assert any("denied claim" in f.text for f in card.findings)
+
+
+def test_explain_surfaces_costshare_gap_for_insured(app_db):
+    """Cost-share check fires in Flow 1 for an insured member (hospital EOB gap)."""
+    pilot_conn = _pilot()
+    try:
+        cid = repo.create_case(app_db, "m1")
+        repo.update_case(app_db, cid, problem_type="explain", insurance_situation="employer_erisa")
+        repo.upsert_bill_summary(
+            app_db, cid, total_billed_cents=823215, total_allowed_cents=576466,
+            total_plan_paid_cents=427921, patient_responsibility_cents=148545,
+            copay_cents=10000, deductible_applied_cents=20038,
+            coinsurance_cents=112507, not_covered_cents=0,
+        )
+        card = flow1.explain(app_db, pilot_conn, cid)
+    finally:
+        pilot_conn.close()
+    assert any("don't add up" in f.title for f in card.findings)
+    assert "error" in card.headline.lower()
+
+
+def test_costshare_check_respects_kill_switch(app_db, monkeypatch):
+    """With cost_share_check_enabled off, the check does not run even when it would fire."""
+    monkeypatch.setattr(flow1, "feature_flags", lambda: {"cost_share_check_enabled": False})
+    pilot_conn = _pilot()
+    try:
+        cid = repo.create_case(app_db, "m1")
+        repo.update_case(app_db, cid, problem_type="explain", insurance_situation="employer_erisa")
+        repo.upsert_bill_summary(
+            app_db, cid, patient_responsibility_cents=148545, copay_cents=10000,
+            deductible_applied_cents=20038, coinsurance_cents=112507, not_covered_cents=0,
+        )
+        card = flow1.explain(app_db, pilot_conn, cid)
+    finally:
+        pilot_conn.close()
+    assert not any("don't add up" in f.title for f in card.findings)
+
+
+def test_explain_no_costshare_finding_for_self_pay(app_db):
+    """Scope guard: the cost-share check does not run for non-insured situations."""
+    pilot_conn = _pilot()
+    try:
+        cid = repo.create_case(app_db, "m1")
+        repo.update_case(app_db, cid, problem_type="explain", insurance_situation="self_pay")
+        repo.upsert_bill_summary(
+            app_db, cid, patient_responsibility_cents=148545, copay_cents=10000,
+            deductible_applied_cents=20038, coinsurance_cents=112507, not_covered_cents=0,
+        )
+        card = flow1.explain(app_db, pilot_conn, cid)
+    finally:
+        pilot_conn.close()
+    assert not any("don't add up" in f.title for f in card.findings)
 
 
 def test_cpt_line_category_fallback(app_db):

@@ -3,6 +3,8 @@
 import sqlite3
 from pathlib import Path
 
+from conftest import apply_schema
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCHEMA = REPO_ROOT / "docs" / "app_schema_v0_1.sql"
 
@@ -27,6 +29,18 @@ def test_all_tables_and_view_created(tmp_path):
     assert EXPECTED_TABLES <= tables
     views = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='view'")}
     assert "v_case_savings" in views
+
+
+def test_v0_2_costshare_delta_applies(tmp_path):
+    """The v0.2 delta adds the cost-share columns + member_accumulators on top of v0.1."""
+    conn = sqlite3.connect(tmp_path / "t2.db")
+    conn.execute("PRAGMA foreign_keys = ON")
+    apply_schema(conn)
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(bill_summaries)")}
+    assert {"copay_cents", "deductible_applied_cents", "coinsurance_cents",
+            "not_covered_cents", "discount_cents", "coinsurance_rate_pct"} <= cols
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    assert "member_accumulators" in tables
 
 
 def test_member_fk_enforced(tmp_path):
